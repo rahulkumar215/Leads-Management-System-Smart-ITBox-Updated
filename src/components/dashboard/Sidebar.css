@@ -1,0 +1,10 @@
+.sidebar {
+    height: 100%;
+    transition: all 0.3s;
+  }
+  
+  .sidebar .nav-link:hover {
+    background-color: #495057;
+    border-radius: 5px;
+  }
+  
