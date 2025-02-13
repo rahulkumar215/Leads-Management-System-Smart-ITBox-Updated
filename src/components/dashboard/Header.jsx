@@ -1,13 +1,40 @@
-import React from "react";
-import { FaBell, FaUserCircle } from "react-icons/fa";
+import { FaBars, FaUserCircle } from "react-icons/fa";
+import { HiOutlineX } from "react-icons/hi";
 
-const Header = () => {
+const Header = ({ toggleSidebar, sidebarOpen }) => {
   return (
-    <nav className="navbar navbar-light">
-      <h4>Welcome, User</h4>
-      <div className="d-flex align-items-center">
-        {/* <FaBell className="me-3" size={20} /> */}
-        <FaUserCircle size={25} />
+    <nav className="grid grid-cols-[min-content_1fr_min-content] rounded-md items-center p-2 m-2 bg-[#2C2E30] shadow-lg">
+      {/* Left Section: Hamburger Menu */}
+      <button
+        className="p-2 rounded-md text-white hover:bg-white cursor-pointer hover:text-yellow-600 transition-colors duration-300"
+        onClick={toggleSidebar}
+      >
+        {sidebarOpen ? (
+          <HiOutlineX className="text-2xl" />
+        ) : (
+          <FaBars className="text-2xl" />
+        )}
+      </button>
+
+      {/* Center Section: Company Name (and optional Logo) */}
+      <div className="flex items-center justify-center space-x-4">
+        <div className="text-xl sm:text-2xl font-bold tracking-normal text-white">
+          Leads Management System
+        </div>
+      </div>
+
+      {/* Right Section: Welcome Message & User Icon */}
+      <div className="hidden sm:grid grid-cols-[min-content_min-content] items-center justify-center grid-rows-2 gap-x-2 gap-y-3 ">
+        <span className="text-white col-start-1 font-semibold col-span-1 leading-0">
+          Rahul
+        </span>
+        <span className="text-white col-start-1 text-sm col-span-1  leading-0">
+          Admin
+        </span>
+        <FaUserCircle
+          className="text-white col-start-2 col-span-1 row-start-1 row-span-2"
+          size={25}
+        />
       </div>
     </nav>
   );

@@ -1,189 +1,280 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { FaHome, FaList, FaPlus, FaEdit  } from "react-icons/fa";
-import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
-import { AiFillProduct } from "react-icons/ai";
-import { BsBoxSeamFill } from "react-icons/bs";
-import { MdSupervisorAccount } from "react-icons/md";
-import { MdManageAccounts } from "react-icons/md";
-import { FaUserGroup } from "react-icons/fa6";
-import { useContext } from "react";
-import { ThemeContext } from "../../context/ThemeContext";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { toast } from "react-toastify";
+import React, { useEffect, useState, useContext } from "react";
+import {
+  FaChevronDown,
+  FaChevronRight,
+  FaUserCircle,
+  FaSignOutAlt,
+  FaHome,
+  FaList,
+  FaPlus,
+} from "react-icons/fa";
 import { RiDashboardHorizontalFill } from "react-icons/ri";
 import { SiGoogleanalytics } from "react-icons/si";
-import { IoLogOut } from "react-icons/io5";
+import { BsBoxSeamFill } from "react-icons/bs";
+import { FaUserGroup } from "react-icons/fa6";
+import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
+const Sidebar = ({ isOpen, toggleSidebar }) => {
+  const navigate = useNavigate();
+  const [activeRoute, setActiveRoute] = useState("");
+  const [openMenus, setOpenMenus] = useState({});
+  const location = useLocation();
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
+  // Get role from localStorage to determine which menu items to display
+  const role = localStorage.getItem("role");
 
+  // Toggle submenu visibility while closing any other open menus
+  const toggleMenu = (menu) => {
+    setOpenMenus((prev) => {
+      const newOpenMenus = { ...prev, [menu]: !prev[menu] };
+      Object.keys(newOpenMenus).forEach((key) => {
+        if (key !== menu) newOpenMenus[key] = false;
+      });
+      return newOpenMenus;
+    });
+  };
 
+  // Logout: remove tokens/role and navigate to login
+  const handleLogout = async () => {
+    try {
+      // await axios.post(`${backendUrl}/api/users/logout`, {
+      //     headers: { Authorization: `Bearer ${token}` },
+      // });
 
+      // ✅ Clear Token from Local Storage
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
 
+      // ✅ Redirect to Login Page
+      navigate("/");
+      toast.success("Logout Successfully");
+    } catch (error) {
+      console.error("❌ Error logging out:", error);
+    }
+  };
 
-const Sidebar = () => {
+  // Navigation handler (closes sidebar on mobile devices)
+  const handleNavigate = (route, isChildRoute = false) => {
+    if (isMobile) {
+      toggleSidebar();
+    }
+    setActiveRoute(route);
+    if (!isChildRoute) {
+      setOpenMenus({});
+    }
+    navigate(route);
+  };
 
-  const { backendUrl } = useContext(ThemeContext);
-    const navigate = useNavigate();
-
-    const token = localStorage.getItem('token')
-
-    const handleLogout = async () => {
-        try {
-            // await axios.post(`${backendUrl}/api/users/logout`, {
-            //     headers: { Authorization: `Bearer ${token}` },
-            // });
-
-            // ✅ Clear Token from Local Storage
-            localStorage.removeItem("token");
-            localStorage.removeItem("role");
-
-            // ✅ Redirect to Login Page
-            navigate("/");
-            toast.success("Logout Successfully")
-        } catch (error) {
-            console.error("❌ Error logging out:", error);
-        }
+  // Update mobile state on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
     };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-  const role = localStorage.getItem("role")
+  // Update active route and open menus based on current location
+  useEffect(() => {
+    setActiveRoute(location.pathname);
+    menuItems.forEach((item) => {
+      if (item.children) {
+        const isActiveChild = item.children.some(
+          (child) => child.route === location.pathname
+        );
+        if (isActiveChild) {
+          setOpenMenus((prev) => ({ ...prev, [item.tMenuName]: true }));
+        }
+      }
+    });
+  }, [location.pathname]);
+
+  // Build the menuItems array based on the user's role
+  let menuItems = [];
+  if (role === "admin") {
+    menuItems = [
+      {
+        route: "/admin-dashboard",
+        icon: <RiDashboardHorizontalFill />,
+        label: "Dashboard",
+      },
+      // {
+      //   route: "/admin/analytics",
+      //   icon: <SiGoogleanalytics />,
+      //   label: "Analytics",
+      // },
+      {
+        route: "/admin/manager-accounts",
+        icon: <FaUserGroup />,
+        label: "Accounts",
+      },
+      {
+        route: "/admin/all-leads",
+        icon: <FaList />,
+        label: "All Leads",
+      },
+      {
+        route: "/admin/product-list",
+        icon: <BsBoxSeamFill />,
+        label: "Products",
+      },
+    ];
+  } else if (role === "data_analyst") {
+    menuItems = [
+      {
+        route: "/analyst-dashboard",
+        icon: <FaHome />,
+        label: "Dashboard",
+      },
+      {
+        route: "/analyst-lead",
+        icon: <FaHome />,
+        label: "Leads",
+      },
+      {
+        route: "/create-lead",
+        icon: <FaPlus />,
+        label: "Create Data",
+      },
+    ];
+  } else if (role === "sales_executive") {
+    menuItems = [
+      {
+        route: "/sales-dashboard",
+        icon: <FaHome />,
+        label: "Dashboard",
+      },
+      {
+        route: "/sales-executive-leads",
+        icon: <FaHome />,
+        label: "Leads",
+      },
+    ];
+  } else if (role === "growth_manager") {
+    menuItems = [
+      {
+        route: "/growth-dashboard",
+        icon: <FaHome />,
+        label: "Dashboard",
+      },
+      {
+        route: "/growth-manager-analytics",
+        icon: <FaHome />,
+        label: "Analytics",
+      },
+      {
+        route: "/growth-manager-leads",
+        icon: <FaHome />,
+        label: "Leads",
+      },
+    ];
+  }
 
   return (
-    <div className="bg-dark sidebar_box text-white" >
-      <h3 style={{ textAlign: "center" }}>Dashboard</h3>
-      <ul className="nav flex-column">
+    <aside
+      className={`fixed top-0 left-0 z-50 h-full bg-gray-100 shadow-lg py-2 pl-2 transform transition-all duration-300 ease-in-out
+      ${isOpen ? "translate-x-0" : "-translate-x-full"} w-60 overflow-y-auto`}
+      style={{ scrollbarWidth: "thin" }}
+    >
+      <div className="bg-[#212529]  rounded-md h-full">
+        {/* <div className="flex items-center justify-center p-2">
+          <img src={logo} alt="Logo" className="h-16 object-contain" />
+          <button
+            className="text-gray-600 hover:text-yellow-600 transition-transform duration-300"
+            onClick={toggleSidebar}
+          >
+            <FaCaretDown
+              className={`transform ${isOpen ? "rotate-0" : "rotate-180"}`}
+              size={20}
+            />
+          </button>
+        </div> */}
 
+        <div className="w-full grid sm:hidden grid-cols-2 items-center justify-center grid-rows-2 gap-x-2 gap-y-3 px-3 pt-4 pb-2">
+          <span className="text-white col-start-1 font-semibold col-span-1 leading-0">
+            Rahul
+          </span>
+          <span className="text-white col-start-1 text-sm col-span-1  leading-0">
+            Admin
+          </span>
+          <FaUserCircle
+            className="text-white col-start-2 col-span-1 row-start-1 row-span-2 justify-self-end"
+            size={25}
+          />
+        </div>
 
-      {role === 'admin' && (
-          <>
-          <div style={{ marginBottom: "20px", textAlign: "center" }}>
-              <h5>Admin</h5>
-            </div>
+        {/* Sidebar Menu */}
+        <nav className="p-2">
+          <ul className="space-y-2">
+            {menuItems.map((item) => (
+              <li key={item.route}>
+                <button
+                  onClick={() =>
+                    item.children
+                      ? toggleMenu(item.tMenuName)
+                      : handleNavigate(item.route, false)
+                  }
+                  className={`w-full grid  cursor-pointer grid-cols-[min-content_max-content_1fr] items-center gap-2 px-4 py-2 text-sm font-medium transition-all rounded-md duration-200 ${
+                    activeRoute === item.route
+                      ? "bg-gray-100 text-gray-900"
+                      : "text-gray-100 hover:bg-gray-200 hover:text-gray-900"
+                  }`}
+                >
+                  <span className="text-lg text-yellow-500">{item.icon}</span>
+                  {item.label}
+                  {item.children &&
+                    (openMenus[item.tMenuName] ? (
+                      <FaChevronDown />
+                    ) : (
+                      <FaChevronRight />
+                    ))}
+                </button>
+                {item.children && (
+                  <div
+                    className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${
+                      openMenus[item.tMenuName] ? "max-h-96" : "max-h-0"
+                    }`}
+                  >
+                    <ul className="pl-6 space-y-2">
+                      {item.children.map((child) => (
+                        <li key={child.route}>
+                          <button
+                            onClick={() => handleNavigate(child.route, true)}
+                            className={`w-full flex items-center gap-4 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                              activeRoute === child.route
+                                ? "bg-gray-300 text-gray-900"
+                                : "text-gray-700 hover:bg-gray-200 hover:text-gray-900"
+                            }`}
+                          >
+                            <span className="text-lg text-yellow-600">
+                              {child.icon}
+                            </span>
+                            {child.label}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </nav>
 
-            <li className="nav-item">
-              <Link to="/admin-dashboard" className="nav-link text-white">
-                <RiDashboardHorizontalFill className="me-2" /> Dashboard
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link to="/admin/analytics" className="nav-link text-white">
-                <SiGoogleanalytics className="me-2" /> Analytics
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link to="/admin/manager-accounts" className="nav-link text-white">
-                <FaUserGroup className="me-2" /> Accounts
-              </Link>
-            </li>
-
-            {/* <li className="nav-item">
-              <Link to="/create-lead" className="nav-link text-white">
-                <FaPlus className="me-2" /> Create Data
-              </Link>
-            </li> */}
-
-            <li className="nav-item">
-              <Link to="/admin/all-leads" className="nav-link text-white">
-                <FaList className="me-2" /> All Leads
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link to="/admin/product-list" className="nav-link text-white">
-                <BsBoxSeamFill className="me-2" /> Products
-              </Link>
-            </li>
-          </>
-        )}
-
-
-        {role === 'data_analyst' && (
-          <>
-          <div style={{ marginBottom: "20px", textAlign: "center" }}>
-              <h5>Data Analyst</h5>
-            </div>
-
-            <li className="nav-item">
-              <Link to="/analyst-dashboard" className="nav-link text-white">
-                <FaHome className="me-2" /> Dashboard
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link to="/analyst-lead" className="nav-link text-white">
-                <FaHome className="me-2" /> Leads
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link to="/create-lead" className="nav-link text-white">
-                <FaPlus className="me-2" /> Create Data
-              </Link>
-            </li>
-          </>
-        )}
-
-        {role === "sales_executive" && (
-          <>
-            <div style={{ marginBottom: "20px", textAlign: "center" }}>
-              <h5>Sale Executive</h5>
-            </div>
-            <li className="nav-item">
-              <Link to="/sales-dashboard" className="nav-link text-white">
-                <FaHome className="me-2" /> Dashboard
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link to="/sales-executive-leads" className="nav-link text-white">
-                <FaHome className="me-2" /> Leads
-              </Link>
-            </li>
-          </>
-        )}
-
-        {role === 'growth_manager' && (
-          <>
-            <div style={{ marginBottom: "20px", textAlign: "center" }}>
-              <h5>Growth Manager</h5>
-            </div>
-            <li className="nav-item">
-              <Link to="/growth-dashboard" className="nav-link text-white">
-                <FaHome className="me-2" /> Dashboard
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link to="/growth-manager-analytics" className="nav-link text-white">
-                <FaHome className="me-2" /> Analytics
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link to="/growth-manager-leads" className="nav-link text-white">
-                <FaHome className="me-2" /> Leads
-              </Link>
-            </li>
-          </>
-        )}
-
-
-
-        {/* <li className="nav-item">
-          <Link to="/list" className="nav-link text-white">
-            <FaList className="me-2" /> List Data
-          </Link>
-        </li> */}
-
-
-        <button className="global_btn" onClick={handleLogout} style={{ padding: "10px", cursor: "pointer" , position:"absolute",bottom:'30px',display:"flex",alignItems:"center"}}>
-        <IoLogOut style={{fontSize:"20px", marginRight:"5px"}}/> <span>Logout</span>
-        </button>
-      </ul>
-    </div>
+        {/* Logout Section */}
+        <div className="p-2 ">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 bg-white hover:bg-red-800 text-red-600"
+          >
+            <FaSignOutAlt size={18} />
+            <span className="text-sm tracking-wide font-medium">Log out</span>
+          </button>
+        </div>
+      </div>
+    </aside>
   );
 };
 

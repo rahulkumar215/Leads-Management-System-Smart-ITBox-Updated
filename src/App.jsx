@@ -25,6 +25,8 @@ import LeadDetails from "./components/admin/LeadDetails";
 import DataAnalystDashboard from "./components/dataAnalyst/DataAnalystDashboard";
 import GrowthManagerAnalytics from "./components/growthManager/GrowthManagerAnalytics";
 import AdminAnalytics from "./components/admin/AdminAnalytics";
+import { useEffect, useState } from "react";
+import AdminDashboardDashboard from "./components/admin/AdminDashboardCombined";
 
 function App() {
   return (
@@ -179,7 +181,7 @@ function App() {
           element={
             <PrivateRoute>
               <DashboardLayout>
-                <AdminDashboard />
+                <AdminDashboardDashboard />
               </DashboardLayout>
             </PrivateRoute>
           }
@@ -239,22 +241,66 @@ function App() {
   );
 }
 
-const DashboardLayout = ({ children }) => (
-  <div>
-    <div className="row">
-      <div className="col-lg-2" style={{ padding: 0 }}>
-        <Sidebar style={{ height: "100vh" }} />
-      </div>
-      <div className="col-lg-10" style={{ padding: 0 }}>
-        <div className="flex-grow-1 d-flex flex-column">
-          <Header />
-          <div className="dashboard_main flex-grow-1 overflow-auto">
-            {children}
-          </div>
+const DashboardLayout = ({ children }) => {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      setSidebarOpen(!mobile); // Open sidebar by default on desktop, closed on mobile
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Ensure correct state on initial render
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  return (
+    <div className="flex flex-col min-h-screen overflow-hidden">
+      <div className="flex flex-1 w-full">
+        {/* Sidebar */}
+        <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+
+        {/* Main Content */}
+        <div
+          className={`flex-1 overflow-hidden transition-all duration-300 ease-in-out ${
+            isMobile
+              ? sidebarOpen
+                ? "translate-x-60"
+                : "translate-x-0"
+              : sidebarOpen
+              ? "ml-60"
+              : "ml-0"
+          }`}
+        >
+          <Header toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
+          <div className="flex-1 max-w-full m-2 rounded-md">{children}</div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
+// <div>
+//   <div className="row">
+//     <div className="col-lg-2" style={{ padding: 0 }}>
+//       <Sidebar style={{ height: "100vh" }} />
+//     </div>
+//     <div className="col-lg-10" style={{ padding: 0 }}>
+//       <div className="flex-grow-1 d-flex flex-column">
+//         <Header />
+//         <div className="dashboard_main flex-grow-1 overflow-auto">
+//           {children}
+//         </div>
+//       </div>
+//     </div>
+//   </div>
+// </div>
 
 export default App;
