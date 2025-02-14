@@ -1,27 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import Layout from "../common/Layout";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
 import { ThemeContext } from "../../context/ThemeContext";
-import { Link, useParams } from "react-router-dom";
 import axios from "axios";
-
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData("Eclair", 262, 16.0, 24, 6.0),
-  createData("Cupcake", 305, 3.7, 67, 4.3),
-  createData("Gingerbread", 356, 16.0, 49, 3.9),
-];
+import ReactPaginate from "react-paginate";
+import { DNA } from "react-loader-spinner";
+import { MdOutlineOpenInNew } from "react-icons/md";
 
 const AllLeads = () => {
   const { backendUrl, navigate } = useContext(ThemeContext);
@@ -29,14 +12,19 @@ const AllLeads = () => {
 
   const [leads, setLeads] = useState([]);
   const [filteredLeads, setFilteredLeads] = useState([]);
-  const [statusFilter, setStatusFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [leadsLoading, setLeadsLoading] = useState(false);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchLeads();
   }, []);
 
   const fetchLeads = async () => {
+    setLeadsLoading(true);
     try {
       const response = await axios.get(
         `${backendUrl}/api/admin/getAllLeadsForAdmin`,
@@ -46,12 +34,35 @@ const AllLeads = () => {
       );
       setLeads(response.data.leads);
       setFilteredLeads(response.data.leads);
-      console.log("All leads", response.data.leads);
     } catch (error) {
       console.error("❌ Error fetching leads:", error);
+    } finally {
+      setLeadsLoading(false);
     }
   };
 
+  // Updated global search: uses the passed query value directly
+  const applySearch = (data, query) => {
+    if (!query.trim()) {
+      setFilteredLeads(data);
+      return;
+    }
+    const lowerQuery = query.toLowerCase();
+    const filtered = data.filter((lead) =>
+      Object.values(lead)
+        .filter((value) => value !== null && value !== undefined)
+        .some((value) => value.toString().toLowerCase().includes(lowerQuery))
+    );
+    setFilteredLeads(filtered);
+  };
+
+  const handleSearchChange = (event) => {
+    const newValue = event.target.value;
+    setSearchQuery(newValue);
+    applySearch(leads, newValue);
+    setCurrentPage(0);
+  };
+  // Helper function to mark new leads (created today)
   const isNewLead = (createdAt) => {
     if (!createdAt) return false;
     const leadDate = new Date(createdAt).setHours(0, 0, 0, 0);
@@ -59,164 +70,248 @@ const AllLeads = () => {
     return leadDate === today;
   };
 
-  const filterLeads = (status) => {
-    setStatusFilter(status);
-    if (status === "All") {
-      setFilteredLeads(leads);
-    } else {
-      setFilteredLeads(leads.filter((lead) => lead.status === status));
-    }
+  // Pagination calculations
+  const offset = currentPage * itemsPerPage;
+  const currentPageData = filteredLeads.slice(offset, offset + itemsPerPage);
+  const pageCount = Math.ceil(filteredLeads.length / itemsPerPage);
+
+  const handlePageChange = ({ selected }) => {
+    setCurrentPage(selected);
   };
 
-  // ✅ Function to filter leads by search input
-  const applySearch = (data) => {
-    if (!searchQuery.trim()) {
-      setFilteredLeads(data);
-      return;
-    }
-
-    const filtered = data.filter(
-      (lead) =>
-        lead._id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        lead.companyName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        lead.status?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        lead.createdBy?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        lead.assignedToSalesExecutive
-          ?.toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        lead.assignedToGrowthManager
-          ?.toLowerCase()
-          .includes(searchQuery.toLowerCase())
-    );
-
-    setFilteredLeads(filtered);
-  };
-
-  // ✅ Function to handle search input change
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
-    applySearch(leads);
+  const [expandedRows, setExpandedRows] = useState([]);
+  const toggleRowExpansion = (id) => {
+    setExpandedRows((prev) => (prev.includes(id) ? [] : [id]));
   };
 
   return (
-    <div>
-      <Layout>
-        <div className="admin-leads-container">
-          <h4 style={{ marginBottom: "20px" }}>
-            All Leads <span style={{ fontSize: "16px" }}>({leads.length})</span>
-          </h4>
+    <Layout>
+      <div className="p-2" style={{ minHeight: "100vh" }}>
+        <h4 className="text-lg font-semibold mb-2">
+          All Leads <span className="text-sm">({leads.length})</span>
+        </h4>
 
-          {/* 🔍 Search Bar */}
+        <div className="flex flex-col sm:flex-row items-center justify-between mb-4">
           <input
-            className="search_input"
             type="text"
-            placeholder="Search by company Id, name, status, analyst, sales executive, growth manager..."
+            placeholder="Search by anything..."
             value={searchQuery}
             onChange={handleSearchChange}
+            className="px-2 py-2 border border-gray-300 bg-gray-100 rounded-md shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-slate-500"
           />
+          {/* You can add additional filters here if needed */}
+        </div>
 
-          {/* Filters */}
-          {/* <div className="lead-filters">
-                        <button onClick={() => filterLeads("All")}>All</button>
-                        <button onClick={() => filterLeads("Open")}>Open</button>
-                        <button onClick={() => filterLeads("Draft")}>Draft</button>
-                        <button onClick={() => filterLeads("Closed")}>Closed</button>
-                    </div> */}
-
-          {/* table start */}
-
-          <div className="custom_table admin_all_table">
-            <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>ID</TableCell>
-                    <TableCell>Company Name</TableCell>
-                    <TableCell align="left">Status</TableCell>
-                    <TableCell align="right">Data Analyst</TableCell>
-                    <TableCell align="right">Sales Executive</TableCell>
-                    <TableCell align="right">Growth Manager</TableCell>
-                    <TableCell align="right">Contact Points </TableCell>
-                    <TableCell align="right">Company Lost</TableCell>
-                    <TableCell align="right">Action</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filteredLeads.map((lead) => (
-                    <TableRow
-                      key={lead._id}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+        <div
+          className="overflow-x-auto shadow-md rounded-lg border border-gray-300"
+          style={{ scrollbarWidth: "thin" }}
+        >
+          <table className="min-w-full table-auto border-collapse">
+            <thead className="bg-[#173B45] text-[#F8EDED] sticky top-0 z-10">
+              <tr>
+                {/* Always visible */}
+                <th className="py-2 text-sm min-w-16 font-semibold">Lead Id</th>
+                {/* Desktop only */}
+                <th className="px-2 py-2 text-sm text-left font-semibold hidden md:table-cell">
+                  Created At
+                </th>
+                {/* Always visible */}
+                <th className="px-2 py-2 min-w-30 text-left text-sm font-semibold">
+                  Company Name
+                </th>
+                {/* Always visible */}
+                <th className="px-2 py-2 text-sm text-left font-semibold">
+                  Status
+                </th>
+                {/* Desktop only */}
+                <th className="px-4 py-2 text-sm font-semibold hidden md:table-cell">
+                  Data Analyst
+                </th>
+                {/* Always visible */}
+                <th className="px-4 py-2 text-sm font-semibold">
+                  Sales Executive
+                </th>
+                {/* Desktop only */}
+                <th className="px-4 py-2 text-right text-sm font-semibold hidden md:table-cell">
+                  Growth Manager
+                </th>
+                {/* Always visible */}
+                <th className="px-4 py-2 text-center text-sm font-semibold">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white">
+              {leadsLoading ? (
+                <tr>
+                  <td colSpan="8">
+                    <div className="flex justify-center py-4">
+                      <DNA
+                        visible={true}
+                        height="40"
+                        width="40"
+                        ariaLabel="dna-loading"
+                        wrapperStyle={{}}
+                        wrapperClass="dna-wrapper"
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ) : currentPageData.length > 0 ? (
+                currentPageData.map((lead) => (
+                  <React.Fragment key={lead._id}>
+                    <tr
+                      onClick={() => toggleRowExpansion(lead._id)}
+                      className="border-b divide-x divide-gray-200 border-gray-200 text-sm hover:bg-gray-50 cursor-pointer"
                     >
-                      <TableCell
-                        align="left"
-                        style={{ textTransform: "capitalize" }}
-                      >
+                      {/* ID – always visible */}
+                      <td className="px-2 py-1 text-center capitalize">
                         {lead._id.slice(-5)}
-                      </TableCell>
-                      <TableCell
-                        align="left"
-                        style={{ textTransform: "capitalize" }}
-                      >
+                      </td>
+                      {/* Created At – desktop only */}
+                      <td className="px-2 py-1 hidden md:table-cell">
+                        {new Date(lead.createdAt).toLocaleString("en-IN", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}
+                      </td>
+                      {/* Company Name – always visible */}
+                      <td className="px-2 py-1 capitalize">
                         {lead.companyName}{" "}
                         {isNewLead(lead.createdAt) && (
-                          <span className="new_badge">New</span>
+                          <span className="bg-green-600 text-white text-xs px-1 rounded ml-2">
+                            New
+                          </span>
                         )}
-                      </TableCell>
-                      <TableCell
-                        align="left"
-                        style={{ textTransform: "capitalize" }}
-                      >
-                        {lead.status}
-                      </TableCell>
-
-                      <TableCell
-                        align="right"
-                        style={{ textTransform: "capitalize" }}
-                      >
+                      </td>
+                      {/* Status – always visible */}
+                      <td className="px-2 py-1 capitalize">{lead.status}</td>
+                      {/* Data Analyst – desktop only */}
+                      <td className="px-2 py-1 text-center hidden md:table-cell capitalize">
                         {lead.createdBy || "N/A"}
-                      </TableCell>
-                      <TableCell
-                        align="right"
-                        style={{ textTransform: "capitalize" }}
-                      >
+                      </td>
+                      {/* Sales Executive – always visible */}
+                      <td className="px-2 py-1 text-center capitalize">
                         {lead.assignedToSalesExecutive || "Not Assigned"}
-                      </TableCell>
-                      <TableCell
-                        align="right"
-                        style={{ textTransform: "capitalize" }}
-                      >
+                      </td>
+                      {/* Growth Manager – desktop only */}
+                      <td className="px-2 py-1 text-right hidden md:table-cell capitalize">
                         {lead.assignedToGrowthManager || "Not Assigned"}
-                      </TableCell>
-                      <TableCell align="right">
-                        {lead?.contactPointsCount
-                          ? lead?.contactPointsCount
-                          : "0"}
-                      </TableCell>
-                      <TableCell
-                        align="right"
-                        style={{ textTransform: "capitalize" }}
-                      >
-                        {lead.isCompanyLost ? "Yes" : "No"}
-                      </TableCell>
-                      <TableCell align="right">
+                      </td>
+                      {/* Action – always visible */}
+                      <td className="px-2 py-1 text-center">
                         <button
-                          className="global_btn"
-                          onClick={() =>
-                            navigate(`/admin/lead-details/${lead._id}`)
-                          }
+                          className="px-3 py-1 text-green-600 cursor-pointer rounded hover:text-green-700 focus:outline-none"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/admin/lead-details/${lead._id}`);
+                          }}
                         >
-                          View
+                          <MdOutlineOpenInNew size={20} />
                         </button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </div>
+                      </td>
+                    </tr>
+                    {/* Expanded Section */}
+                    {expandedRows.includes(lead._id) && (
+                      <tr className="bg-gray-50">
+                        <td colSpan="8" className="px-4 py-2">
+                          {/* Desktop Expanded: Industry, Contact Points, Company Lost, Lost Reason */}
+                          <div className="hidden md:flex justify-start gap-8">
+                            <div>
+                              <strong>Industry:</strong> {lead.industry}
+                            </div>
+                            <div>
+                              <strong>Contact Points:</strong>{" "}
+                              {lead?.contactPointsCount || 0}
+                            </div>
+                            <div>
+                              <strong>Company Lost:</strong>{" "}
+                              {lead.isCompanyLost ? "Yes" : "No"}
+                            </div>
+                            {lead.isCompanyLost && (
+                              <div>
+                                <strong>Lost Reason:</strong>{" "}
+                                {lead.companyLostReason || "-"}
+                              </div>
+                            )}
+                          </div>
+                          {/* Mobile Expanded: Industry, Data Analyst, Growth Manager, Contact Points, Company Lost, Lost Reason */}
+                          <div className="block md:hidden">
+                            <div className="mb-1">
+                              <strong>Industry:</strong> {lead.industry}
+                            </div>
+                            <div className="mb-1">
+                              <strong>Data Analyst:</strong>{" "}
+                              {lead.createdBy || "N/A"}
+                            </div>
+                            <div className="mb-1">
+                              <strong>Growth Manager:</strong>{" "}
+                              {lead.assignedToGrowthManager || "Not Assigned"}
+                            </div>
+                            <div className="mb-1">
+                              <strong>Contact Points:</strong>{" "}
+                              {lead?.contactPointsCount || 0}
+                            </div>
+                            <div className="mb-1">
+                              <strong>Company Lost:</strong>{" "}
+                              {lead.isCompanyLost ? "Yes" : "No"}
+                            </div>
+                            {lead.isCompanyLost && (
+                              <div className="mb-1">
+                                <strong>Lost Reason:</strong>{" "}
+                                {lead.companyLostReason || "-"}
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8" className="text-center py-4">
+                    No leads found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-      </Layout>
-    </div>
+
+        {/* Pagination */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mt-4">
+          <div className="text-sm text-gray-700">
+            Showing {filteredLeads.length === 0 ? 0 : offset + 1} to{" "}
+            {offset + currentPageData.length} of {filteredLeads.length} entries
+          </div>
+          <ReactPaginate
+            previousLabel={"Prev"}
+            nextLabel={"Next"}
+            breakLabel={"..."}
+            pageCount={pageCount}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={3}
+            onPageChange={handlePageChange}
+            containerClassName={"pagination flex space-x-2"}
+            pageClassName={
+              "px-2 border border-gray-500 rounded-md cursor-pointer"
+            }
+            activeClassName={"bg-gray-300 text-black"}
+            previousClassName={
+              "px-2 border border-gray-500 rounded-md cursor-pointer"
+            }
+            nextClassName={
+              "px-2 border border-gray-500 rounded-md cursor-pointer"
+            }
+          />
+        </div>
+      </div>
+    </Layout>
   );
 };
 

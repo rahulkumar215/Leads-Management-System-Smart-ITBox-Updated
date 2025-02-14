@@ -14,6 +14,7 @@ import { BsBoxSeamFill } from "react-icons/bs";
 import { FaUserGroup } from "react-icons/fa6";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { IoNotifications } from "react-icons/io5";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const navigate = useNavigate();
@@ -105,6 +106,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       //   icon: <SiGoogleanalytics />,
       //   label: "Analytics",
       // },
+      {
+        route: "/admin/notification",
+        icon: <IoNotifications />,
+        label: "Notifications",
+      },
       {
         route: "/admin/manager-accounts",
         icon: <FaUserGroup />,

@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { HiOutlineX } from "react-icons/hi";
-import { ToastContainer } from "react-toastify";
+import { Bars } from "react-loader-spinner";
 import "react-toastify/dist/ReactToastify.css";
 
-const AddUserModal = ({ newUser, setNewUser, handleCreateUser, onClose }) => {
+const AddUserModal = ({ newUser, setNewUser, handleCreateUser, isLoading, onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     handleCreateUser();
@@ -10,14 +11,29 @@ const AddUserModal = ({ newUser, setNewUser, handleCreateUser, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-500/50 flex justify-center items-center z-50">
-      <div className="bg-white p-4 m-4 rounded-lg shadow-lg w-full sm:w-[30rem] max-h-[90vh] overflow-x-auto space-y-6">
+      <div className="relative bg-white p-4 m-4 rounded-lg shadow-lg w-full sm:w-[30rem] max-h-[90vh] overflow-x-auto space-y-6">
+        {/* Overlay to block interactions when loading */}
+        {isLoading && (
+          <div className="absolute inset-0 flex justify-center h-full items-center bg-white/30 z-10">
+            <Bars
+              height="40"
+              width="40"
+              color="#B43F3F"
+              ariaLabel="bars-loading"
+              wrapperStyle={{}}
+              wrapperClass=""
+              visible={true}
+            />
+          </div>
+        )}
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold text-[#B43F3F]">
+          <h2 className="text-2xl font-semibold text-slate-800">
             Add New User
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-600 hover:text-red-800"
+            disabled={isLoading}
+            className="text-gray-600 cursor-pointer hover:text-red-800"
           >
             <HiOutlineX size={24} />
           </button>
@@ -36,6 +52,7 @@ const AddUserModal = ({ newUser, setNewUser, handleCreateUser, onClose }) => {
               value={newUser.name}
               onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
               required
+              disabled={isLoading}
               className="mt-1 p-1 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#B43F3F]"
             />
           </div>
@@ -48,13 +65,14 @@ const AddUserModal = ({ newUser, setNewUser, handleCreateUser, onClose }) => {
                 Mobile No <span className="text-lg text-red-500">*</span>
               </label>
               <input
-                type="text"
+                type="tel"
                 id="mobileNo"
                 value={newUser.mobileNo}
                 onChange={(e) =>
                   setNewUser({ ...newUser, mobileNo: e.target.value })
                 }
                 required
+                disabled={isLoading}
                 className="mt-1 p-1 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#B43F3F]"
               />
             </div>
@@ -73,6 +91,7 @@ const AddUserModal = ({ newUser, setNewUser, handleCreateUser, onClose }) => {
                   setNewUser({ ...newUser, email: e.target.value })
                 }
                 required
+                disabled={isLoading}
                 className="mt-1 p-1 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#B43F3F]"
               />
             </div>
@@ -89,6 +108,7 @@ const AddUserModal = ({ newUser, setNewUser, handleCreateUser, onClose }) => {
               value={newUser.role}
               onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
               required
+              disabled={isLoading}
               className="mt-1 p-1 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#B43F3F]"
             >
               <option value="sales_executive">Sales Executive</option>
@@ -111,6 +131,7 @@ const AddUserModal = ({ newUser, setNewUser, handleCreateUser, onClose }) => {
                 setNewUser({ ...newUser, username: e.target.value })
               }
               required
+              disabled={isLoading}
               className="mt-1 p-1 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#B43F3F]"
             />
           </div>
@@ -127,6 +148,7 @@ const AddUserModal = ({ newUser, setNewUser, handleCreateUser, onClose }) => {
               value={newUser.pswd}
               onChange={(e) => setNewUser({ ...newUser, pswd: e.target.value })}
               required
+              disabled={isLoading}
               className="mt-1 p-1 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#B43F3F]"
             />
           </div>
@@ -134,20 +156,33 @@ const AddUserModal = ({ newUser, setNewUser, handleCreateUser, onClose }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none"
+              disabled={isLoading}
+              className="px-6 py-2 bg-gray-200 text-gray-700 cursor-pointer rounded-md hover:bg-gray-300 focus:outline-none"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-[#B43F3F] text-white rounded-md hover:bg-[#FF8225] focus:outline-none"
+              disabled={isLoading}
+              className="px-6 py-2 bg-red-600 text-white rounded-md cursor-pointer hover:bg-red-700 focus:outline-none"
             >
-              Add User
+              {isLoading ? (
+                <Bars
+                  height="20"
+                  width="20"
+                  color="#ffffff"
+                  ariaLabel="bars-loading"
+                  wrapperStyle={{}}
+                  wrapperClass=""
+                  visible={true}
+                />
+              ) : (
+                "Add User"
+              )}
             </button>
           </div>
         </form>
       </div>
-      <ToastContainer />
     </div>
   );
 };

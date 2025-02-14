@@ -27,6 +27,7 @@ import GrowthManagerAnalytics from "./components/growthManager/GrowthManagerAnal
 import AdminAnalytics from "./components/admin/AdminAnalytics";
 import { useEffect, useState } from "react";
 import AdminDashboardDashboard from "./components/admin/AdminDashboardCombined";
+import Notifications from "./components/admin/Notifications";
 
 function App() {
   return (
@@ -36,9 +37,7 @@ function App() {
         {/* Public Routes */}
         <Route path="/" element={<SignIn />} />
         <Route path="*" element={<NotFound />} />
-
         {/* Protected Routes (requires authentication) */}
-
         {/* data analyst routes */}
         <Route
           path="/analyst-lead"
@@ -80,7 +79,6 @@ function App() {
             </PrivateRoute>
           }
         />
-
         {/* sales executive routes */}
         <Route
           path="/sales-dashboard"
@@ -122,7 +120,6 @@ function App() {
             </PrivateRoute>
           }
         />
-
         {/* Growth Manager Routes */}
         <Route
           path="/growth-dashboard"
@@ -174,7 +171,6 @@ function App() {
             </PrivateRoute>
           }
         />
-
         {/* admin routes */}
         <Route
           path="/admin-dashboard"
@@ -226,12 +222,22 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route
+        {/* <Route  
           path="/admin/analytics"
           element={
             <PrivateRoute>
               <DashboardLayout>
                 <AdminAnalytics />
+              </DashboardLayout>
+            </PrivateRoute>
+          }
+        />*/}
+        <Route
+          path="/admin/notification"
+          element={
+            <PrivateRoute>
+              <DashboardLayout>
+                <Notifications />
               </DashboardLayout>
             </PrivateRoute>
           }

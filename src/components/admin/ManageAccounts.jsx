@@ -4,11 +4,12 @@ import axios from "axios";
 import Layout from "../common/Layout";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import ReactPaginate from "react-paginate";
-import AddUserModal from "./AddUserModal"; // Adjust the import path as needed
-import { HiOutlineTrash, HiTrash } from "react-icons/hi";
+import AddUserModal from "./AddUserModal";
+import { HiOutlineTrash } from "react-icons/hi";
 import { LuUserX, LuUserCheck } from "react-icons/lu";
+import Swal from "sweetalert2";
+import { DNA } from "react-loader-spinner";
 
 const ManageAccounts = () => {
   const { backendUrl } = useContext(ThemeContext);
@@ -17,6 +18,8 @@ const ManageAccounts = () => {
   // Users & search state
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   // New user state that will be passed to the modal
@@ -34,13 +37,14 @@ const ManageAccounts = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
   const fetchUsers = async () => {
+    setUsersLoading(true);
     try {
       const response = await axios.get(`${backendUrl}/api/users/users`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -50,6 +54,8 @@ const ManageAccounts = () => {
     } catch (error) {
       console.error("Error fetching users:", error);
       toast.error("Error fetching users");
+    } finally {
+      setUsersLoading(false);
     }
   };
 
@@ -74,6 +80,7 @@ const ManageAccounts = () => {
   };
 
   const handleCreateUser = async () => {
+    setIsLoading(true);
     try {
       await axios.post(`${backendUrl}/api/users/register`, newUser, {
         headers: { Authorization: `Bearer ${token}` },
@@ -92,6 +99,8 @@ const ManageAccounts = () => {
     } catch (error) {
       console.error("Error creating user:", error);
       toast.error("Something Went Wrong");
+    } finally {
+      setIsLoading(true);
     }
   };
 
@@ -135,6 +144,84 @@ const ManageAccounts = () => {
     setCurrentPage(selected);
   };
 
+  // 1. Add these helper functions inside the ManageAccounts component
+  const renderStatus = (status) => {
+    const formatted =
+      status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+    let colorClass = "";
+    if (status === "active") {
+      colorClass = "text-green-600 font-semibold";
+    } else if (status === "blacklisted") {
+      colorClass = "text-red-600 font-semibold";
+    }
+    return <span className={colorClass}>{formatted}</span>;
+  };
+
+  const renderRole = (role) => {
+    let formatted = "";
+    let colorClass = "";
+    if (role === "growth_manager") {
+      formatted = "Growth Manager";
+      colorClass = "text-blue-600 font-semibold";
+    } else if (role === "sales_executive") {
+      formatted = "Sales Executive";
+      colorClass = "text-purple-600 font-semibold";
+    } else if (role === "data_analyst") {
+      formatted = "Data Analyst";
+      colorClass = "text-orange-600 font-semibold";
+    } else {
+      formatted = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+    }
+    return <span className={colorClass}>{formatted}</span>;
+  };
+
+  // Confirm Delete User with SweetAlert2
+  const confirmDeleteUser = (userId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to delete this user? This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: "custom-swal",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleDeleteUser(userId);
+      }
+    });
+  };
+
+  // Confirm Update Status (Activate/Deactivate) with SweetAlert2
+  const confirmUpdateStatus = (userId, currentStatus) => {
+    const actionText = currentStatus === "active" ? "deactivate" : "activate";
+    Swal.fire({
+      title: "Are you sure?",
+      text: `Do you really want to ${actionText} this user?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: "custom-swal",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleUpdateStatus(userId, currentStatus);
+      }
+    });
+  };
+
+  const [expandedRows, setExpandedRows] = useState([]);
+
+  const toggleRowExpansion = (id) => {
+    setExpandedRows((prev) =>
+      prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
+    );
+  };
+
   return (
     <Layout>
       <div className="p-4" style={{ minHeight: "100vh" }}>
@@ -143,7 +230,7 @@ const ManageAccounts = () => {
             <h4 className="text-lg font-semibold mb-2">
               All Users <span className="text-sm">({users.length})</span>
             </h4>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
               <input
                 type="text"
                 placeholder="Search by name, email, role, or status..."
@@ -154,23 +241,34 @@ const ManageAccounts = () => {
               {/* Button to open the modal */}
               <button
                 onClick={() => setIsAddUserModalOpen(true)}
-                className="px-4 py-2 bg-[#B43F3F] text-white rounded-md hover:bg-[#FF8225] focus:outline-none"
+                className="px-4 py-2 bg-red-600 text-white w-full sm:w-fit cursor-pointer rounded-md hover:bg-red-700 focus:outline-none"
               >
                 Add New User
               </button>
             </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full table-auto rounded-lg overflow-hidden shadow-md border-collapse">
-              <thead style={{ backgroundColor: "#173B45", color: "#F8EDED" }}>
+          <div
+            className="overflow-x-auto max-h-[50rem] shadow-md rounded-lg border border-gray-300"
+            style={{ scrollbarWidth: "thin" }}
+          >
+            <table className="min-w-full table-auto border-collapse">
+              <thead
+                style={{ backgroundColor: "#173B45", color: "#F8EDED" }}
+                className="sticky top-0 z-5"
+              >
                 <tr>
+                  {/* Hide S. No. on mobile */}
+                  <th className="px-2 py-2  text-left text-sm font-semibold hidden sm:table-cell">
+                    S. No.
+                  </th>
                   <th className="px-2 py-2 text-left text-sm font-semibold">
                     Name
                   </th>
-                  <th className="px-2 py-2 text-left text-sm font-semibold">
+                  {/* Hide Email on mobile */}
+                  <th className="px-2 py-2 text-left text-sm font-semibold hidden sm:table-cell">
                     Email
                   </th>
-                  <th className="px-2 py-2 text-left text-sm font-semibold">
+                  <th className="px-2 py-2 min-w-32 text-left text-sm font-semibold">
                     Role
                   </th>
                   <th className="px-2 py-2 text-left text-sm font-semibold">
@@ -182,40 +280,94 @@ const ManageAccounts = () => {
                 </tr>
               </thead>
               <tbody className="bg-white">
-                {currentPageData.map((user) => (
-                  <tr key={user._id} className="border-b border-gray-200">
-                    <td className="px-2 py-1">{user.name}</td>
-                    <td className="px-2 py-1">{user.email}</td>
-                    <td className="px-2 py-1">{user.role}</td>
-                    <td className="px-2 py-1">{user.accountStatus}</td>
-                    <td className="px-2 py-1 flex gap-2">
-                      <button
-                        onClick={() =>
-                          handleUpdateStatus(user._id, user.accountStatus)
-                        }
-                        className="px-2 py-1 rounded focus:outline-none cursor-pointer"
-                      >
-                        {user.accountStatus === "active" ? (
-                          <LuUserCheck size={20} className="text-green-600" />
-                        ) : (
-                          <LuUserX size={20} className="text-red-600" />
-                        )}
-                      </button>
-                      <button
-                        onClick={() => handleDeleteUser(user._id)}
-                        className="px-2 py-1 text-red-500 hover:text-red-700 cursor-pointer focus:outline-none"
-                      >
-                        <HiOutlineTrash size={20} />
-                      </button>
+                {usersLoading ? (
+                  <tr>
+                    <td colSpan={6}>
+                      <div className="flex justify-center">
+                        <DNA
+                          visible={true}
+                          height="40"
+                          width="40"
+                          ariaLabel="dna-loading"
+                          wrapperStyle={{}}
+                          wrapperClass="dna-wrapper"
+                        />
+                      </div>
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  currentPageData.map((user, i) => (
+                    <React.Fragment key={user._id}>
+                      <tr
+                        className="border-b border-gray-200 cursor-pointer"
+                        onClick={() => toggleRowExpansion(user._id)}
+                      >
+                        {/* S. No. (hidden on mobile) */}
+                        <td className="px-2 py-1 hidden sm:table-cell">
+                          {offset + i + 1}
+                        </td>
+                        <td className="px-2 py-1">{user.name}</td>
+                        {/* Email (hidden on mobile) */}
+                        <td className="px-2 py-1 hidden sm:table-cell">
+                          {user.email}
+                        </td>
+                        <td className="px-2 py-1 text-sm">
+                          {renderRole(user.role)}
+                        </td>
+                        <td className="px-2 py-1 text-sm">
+                          {renderStatus(user.accountStatus)}
+                        </td>
+                        <td
+                          className="px-2 py-1 flex gap-2"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              confirmUpdateStatus(user._id, user.accountStatus);
+                            }}
+                            className="rounded focus:outline-none cursor-pointer"
+                          >
+                            {user.accountStatus === "active" ? (
+                              <LuUserCheck
+                                size={20}
+                                className="text-green-600"
+                              />
+                            ) : (
+                              <LuUserX size={20} className="text-red-600" />
+                            )}
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              confirmDeleteUser(user._id);
+                            }}
+                            className="text-red-500 hover:text-red-700 cursor-pointer focus:outline-none"
+                          >
+                            <HiOutlineTrash size={20} />
+                          </button>
+                        </td>
+                      </tr>
+                      {/* Expanded section visible only on mobile */}
+                      {expandedRows.includes(user._id) && (
+                        <tr className="sm:hidden">
+                          <td colSpan={6} className="px-2 py-2 bg-gray-50">
+                            <div>
+                              <strong>Email: </strong>
+                              {user.email}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
           {/* Pagination */}
-          <div className="flex justify-between items-center mt-4">
-            <div className="text-sm text-gray-700">
+          <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mt-4">
+            <div className="text-sm text-gray-700 order-1 sm:order-[0]">
               Showing {filteredUsers.length === 0 ? 0 : offset + 1} to{" "}
               {offset + currentPageData.length} of {filteredUsers.length}{" "}
               entries
@@ -230,25 +382,28 @@ const ManageAccounts = () => {
               onPageChange={handlePageChange}
               containerClassName={"pagination flex space-x-2"}
               pageClassName={
-                "px-2  border border-gray-500 rounded-md cursor-pointer"
+                "px-2 border border-gray-500 rounded-md cursor-pointer"
               }
               activeClassName={"bg-gray-300 text-black"}
               previousClassName={
-                "px-2  border border-gray-5 00 rounded-md cursor-pointer"
+                "px-2 border border-gray-500 rounded-md cursor-pointer"
               }
               nextClassName={
-                "px-2  border border-gray-500 rounded-md cursor-pointer"
+                "px-2 border border-gray-500 rounded-md cursor-pointer"
               }
             />
           </div>
         </div>
       </div>
+
       <ToastContainer />
+
       {isAddUserModalOpen && (
         <AddUserModal
           newUser={newUser}
           setNewUser={setNewUser}
           handleCreateUser={handleCreateUser}
+          isLoading={isLoading}
           onClose={() => setIsAddUserModalOpen(false)}
         />
       )}
