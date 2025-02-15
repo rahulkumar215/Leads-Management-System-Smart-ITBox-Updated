@@ -224,7 +224,7 @@ const ManageAccounts = () => {
 
   return (
     <Layout>
-      <div className="p-4" style={{ minHeight: "100vh" }}>
+      <div className="p-2" style={{ minHeight: "100vh" }}>
         <div className="flex flex-col gap-4">
           <div>
             <h4 className="text-lg font-semibold mb-2">
@@ -236,7 +236,7 @@ const ManageAccounts = () => {
                 placeholder="Search by name, email, role, or status..."
                 value={searchTerm}
                 onChange={handleSearch}
-                className="px-2 py-1 border border-gray-300 bg-gray-100 rounded-md shadow-sm w-full sm:w-1/3 focus:outline-none focus:ring-2 focus:ring-[#B43F3F]"
+                className=" px-2 py-1 border border-gray-300 bg-gray-100 rounded-md shadow-sm w-full sm:w-1/3 focus:outline-none focus:ring-2 focus:ring-slate-500"
               />
               {/* Button to open the modal */}
               <button
@@ -268,6 +268,9 @@ const ManageAccounts = () => {
                   <th className="px-2 py-2 text-left text-sm font-semibold hidden sm:table-cell">
                     Email
                   </th>
+                  <th className="px-2 py-2 text-left text-sm font-semibold hidden sm:table-cell">
+                    Mobile No.
+                  </th>
                   <th className="px-2 py-2 min-w-32 text-left text-sm font-semibold">
                     Role
                   </th>
@@ -282,7 +285,7 @@ const ManageAccounts = () => {
               <tbody className="bg-white">
                 {usersLoading ? (
                   <tr>
-                    <td colSpan={6}>
+                    <td colSpan={7}>
                       <div className="flex justify-center">
                         <DNA
                           visible={true}
@@ -302,14 +305,15 @@ const ManageAccounts = () => {
                         className="border-b border-gray-200 cursor-pointer"
                         onClick={() => toggleRowExpansion(user._id)}
                       >
-                        {/* S. No. (hidden on mobile) */}
                         <td className="px-2 py-1 hidden sm:table-cell">
                           {offset + i + 1}
                         </td>
                         <td className="px-2 py-1">{user.name}</td>
-                        {/* Email (hidden on mobile) */}
                         <td className="px-2 py-1 hidden sm:table-cell">
                           {user.email}
+                        </td>
+                        <td className="px-2 py-1 hidden sm:table-cell">
+                          {user.mobileNo}
                         </td>
                         <td className="px-2 py-1 text-sm">
                           {renderRole(user.role)}
@@ -355,6 +359,10 @@ const ManageAccounts = () => {
                             <div>
                               <strong>Email: </strong>
                               {user.email}
+                            </div>
+                            <div>
+                              <strong>Mobile No.: </strong>
+                              {user.mobileNo}
                             </div>
                           </td>
                         </tr>

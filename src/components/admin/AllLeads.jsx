@@ -62,6 +62,7 @@ const AllLeads = () => {
     applySearch(leads, newValue);
     setCurrentPage(0);
   };
+
   // Helper function to mark new leads (created today)
   const isNewLead = (createdAt) => {
     if (!createdAt) return false;
@@ -99,7 +100,6 @@ const AllLeads = () => {
             onChange={handleSearchChange}
             className="px-2 py-2 border border-gray-300 bg-gray-100 rounded-md shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-slate-500"
           />
-          {/* You can add additional filters here if needed */}
         </div>
 
         <div
@@ -109,33 +109,25 @@ const AllLeads = () => {
           <table className="min-w-full table-auto border-collapse">
             <thead className="bg-[#173B45] text-[#F8EDED] sticky top-0 z-10">
               <tr>
-                {/* Always visible */}
                 <th className="py-2 text-sm min-w-16 font-semibold">Lead Id</th>
-                {/* Desktop only */}
                 <th className="px-2 py-2 text-sm text-left font-semibold hidden md:table-cell">
                   Created At
                 </th>
-                {/* Always visible */}
                 <th className="px-2 py-2 min-w-30 text-left text-sm font-semibold">
                   Company Name
                 </th>
-                {/* Always visible */}
                 <th className="px-2 py-2 text-sm text-left font-semibold">
                   Status
                 </th>
-                {/* Desktop only */}
                 <th className="px-4 py-2 text-sm font-semibold hidden md:table-cell">
                   Data Analyst
                 </th>
-                {/* Always visible */}
                 <th className="px-4 py-2 text-sm font-semibold">
                   Sales Executive
                 </th>
-                {/* Desktop only */}
                 <th className="px-4 py-2 text-right text-sm font-semibold hidden md:table-cell">
                   Growth Manager
                 </th>
-                {/* Always visible */}
                 <th className="px-4 py-2 text-center text-sm font-semibold">
                   Action
                 </th>
@@ -164,11 +156,9 @@ const AllLeads = () => {
                       onClick={() => toggleRowExpansion(lead._id)}
                       className="border-b divide-x divide-gray-200 border-gray-200 text-sm hover:bg-gray-50 cursor-pointer"
                     >
-                      {/* ID – always visible */}
-                      <td className="px-2 py-1 text-center capitalize">
+                      <td className="px-2 py-1 text-center uppercase text-gray-800 font-semibold">
                         {lead._id.slice(-5)}
                       </td>
-                      {/* Created At – desktop only */}
                       <td className="px-2 py-1 hidden md:table-cell">
                         {new Date(lead.createdAt).toLocaleString("en-IN", {
                           day: "2-digit",
@@ -179,8 +169,7 @@ const AllLeads = () => {
                           hour12: true,
                         })}
                       </td>
-                      {/* Company Name – always visible */}
-                      <td className="px-2 py-1 capitalize">
+                      <td className="px-2 py-1 capitalize font-semibold text-gray-800">
                         {lead.companyName}{" "}
                         {isNewLead(lead.createdAt) && (
                           <span className="bg-green-600 text-white text-xs px-1 rounded ml-2">
@@ -188,21 +177,42 @@ const AllLeads = () => {
                           </span>
                         )}
                       </td>
-                      {/* Status – always visible */}
-                      <td className="px-2 py-1 capitalize">{lead.status}</td>
-                      {/* Data Analyst – desktop only */}
-                      <td className="px-2 py-1 text-center hidden md:table-cell capitalize">
+                      <td
+                        className={`px-2 py-1 capitalize font-semibold ${
+                          lead.status === "open"
+                            ? "text-blue-600"
+                            : "text-red-600"
+                        }`}
+                      >
+                        {lead.status}
+                      </td>
+                      <td
+                        className={`px-2 py-1 text-center hidden md:table-cell capitalize ${
+                          lead.createdBy === "N/A"
+                            ? "text-red-500 font-semibold"
+                            : ""
+                        }`}
+                      >
                         {lead.createdBy || "N/A"}
                       </td>
-                      {/* Sales Executive – always visible */}
-                      <td className="px-2 py-1 text-center capitalize">
+                      <td
+                        className={`px-2 py-1 text-center capitalize ${
+                          lead.assignedToSalesExecutive === "Not Assigned"
+                            ? "text-red-500 font-semibold"
+                            : ""
+                        }`}
+                      >
                         {lead.assignedToSalesExecutive || "Not Assigned"}
                       </td>
-                      {/* Growth Manager – desktop only */}
-                      <td className="px-2 py-1 text-right hidden md:table-cell capitalize">
+                      <td
+                        className={`px-2 py-1 text-right hidden md:table-cell capitalize ${
+                          lead.assignedToGrowthManager === "Not Assigned"
+                            ? "text-red-500 font-semibold"
+                            : ""
+                        }`}
+                      >
                         {lead.assignedToGrowthManager || "Not Assigned"}
                       </td>
-                      {/* Action – always visible */}
                       <td className="px-2 py-1 text-center">
                         <button
                           className="px-3 py-1 text-green-600 cursor-pointer rounded hover:text-green-700 focus:outline-none"
@@ -219,7 +229,6 @@ const AllLeads = () => {
                     {expandedRows.includes(lead._id) && (
                       <tr className="bg-gray-50">
                         <td colSpan="8" className="px-4 py-2">
-                          {/* Desktop Expanded: Industry, Contact Points, Company Lost, Lost Reason */}
                           <div className="hidden md:flex justify-start gap-8">
                             <div>
                               <strong>Industry:</strong> {lead.industry}
@@ -239,7 +248,6 @@ const AllLeads = () => {
                               </div>
                             )}
                           </div>
-                          {/* Mobile Expanded: Industry, Data Analyst, Growth Manager, Contact Points, Company Lost, Lost Reason */}
                           <div className="block md:hidden">
                             <div className="mb-1">
                               <strong>Industry:</strong> {lead.industry}

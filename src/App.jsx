@@ -17,7 +17,7 @@ import SalesExecutiveDashboard from "./components/salesExecutive/SalesExecutiveD
 import GrowthManagerDashboard from "./components/growthManager/GrowthManagerDashboard";
 import GrowthManagerLeads from "./components/growthManager/GrowthManagerLeads";
 import ManageSteps from "./components/growthManager/ManageSteps";
-import ProductList from "./components/admin/ProductList";
+import ProductList from "./components/admin/product/ProductList";
 import ManageAccounts from "./components/admin/ManageAccounts";
 import AllLeads from "./components/admin/AllLeads";
 import FollowUpAlerts from "./components/growthManager/FollowUpAlerts";

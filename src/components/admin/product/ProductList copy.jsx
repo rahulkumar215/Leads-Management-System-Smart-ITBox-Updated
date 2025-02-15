@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
-import Layout from '../common/Layout'
-import { ThemeContext } from '../../context/ThemeContext'
+import Layout from '../../common/Layout'
+import { ThemeContext } from '../../../context/ThemeContext'
 import axios from 'axios'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';

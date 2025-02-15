@@ -273,7 +273,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         <div className="p-2 ">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 bg-white hover:bg-red-800 text-red-600"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all duration-300 bg-white hover:bg-yellow-200 text-red-600"
           >
             <FaSignOutAlt size={18} />
             <span className="text-sm tracking-wide font-medium">Log out</span>
