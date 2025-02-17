@@ -2,6 +2,22 @@ import { FaBars, FaUserCircle } from "react-icons/fa";
 import { HiOutlineX } from "react-icons/hi";
 
 const Header = ({ toggleSidebar, sidebarOpen }) => {
+  const renderRole = (role) => {
+    let formatted = "";
+    if (role === "growth_manager") {
+      formatted = "Growth Manager";
+    } else if (role === "sales_executive") {
+      formatted = "Sales Executive";
+    } else if (role === "data_analyst") {
+      formatted = "Data Analyst";
+    } else {
+      formatted = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+    }
+    return formatted;
+  };
+
+  const role = renderRole(localStorage.getItem("role"));
+
   return (
     <nav className="grid grid-cols-[min-content_1fr_min-content] rounded-md items-center p-2 m-2 bg-[#2C2E30] shadow-lg">
       {/* Left Section: Hamburger Menu */}
@@ -24,12 +40,12 @@ const Header = ({ toggleSidebar, sidebarOpen }) => {
       </div>
 
       {/* Right Section: Welcome Message & User Icon */}
-      <div className="hidden sm:grid grid-cols-[min-content_min-content] items-center justify-center grid-rows-2 gap-x-2 gap-y-3 ">
+      <div className="hidden sm:grid grid-cols-[max-content_min-content] items-center justify-center grid-rows-2 gap-x-2 gap-y-3 ">
         <span className="text-white col-start-1 font-semibold col-span-1 leading-0">
           Rahul
         </span>
-        <span className="text-white col-start-1 text-sm col-span-1  leading-0">
-          Admin
+        <span className="text-white col-start-1 text-sm col-span-1 leading-0">
+          {role}
         </span>
         <FaUserCircle
           className="text-white col-start-2 col-span-1 row-start-1 row-span-2"

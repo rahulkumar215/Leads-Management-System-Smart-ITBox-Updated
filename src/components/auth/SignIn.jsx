@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 // import Logo from '../images/logo/logo.png';
 import sideImage from "../../assets/hero-shape-11.png";
+import logo from "../../assets/logo.jpeg";
 import { toast } from "react-toastify";
 import { ThemeContext } from "../../context/ThemeContext";
 
@@ -78,105 +79,78 @@ const SignIn = () => {
   };
 
   return (
-    <div className="sign_in_page">
-      <div className="">
-        <div className="row">
-          <div className="col-lg-7">
-            <div className="sign_up_left">
-              <div className="sign_up_left_content">
-                <h3>Hello,</h3>
-                <h3>Welcome Back 👋🏻</h3>
-              </div>
-              <div className="sign_up_bg_img">
-                <img src={sideImage} alt="" />
-              </div>
+    <div className="min-h-screen flex">
+      {/* Left Section */}
+      <div className="hidden md:flex md:w-1/2 h-screen relative items-center justify-center bg-gradient-to-br from-[#FF9E4F] to-[#FF8E31] overflow-hidden">
+        <div className="text-center px-8">
+          <h3 className="text-4xl font-bold text-white mb-4">Welcome Back!</h3>
+          <p className="text-lg text-white">
+            Log in to continue your journey with us.
+          </p>
+        </div>
+        {/* Optional decorative image */}
+        {sideImage && (
+          <img
+            src={sideImage}
+            alt="Decorative background"
+            className="absolute bottom-[-70px] left-[-50px] opacity-40 transform -rotate-50"
+          />
+        )}
+      </div>
+
+      {/* Right Section */}
+      <div className="w-full md:w-1/2 h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+        <div className="w-full max-w-md bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg transform transition duration-500 hover:shadow-2xl">
+          <img src={logo} alt="Logo" className="w-24 mb-4 mx-auto" />
+          <h4 className="text-2xl font-bold text-gray-800 dark:text-indigo-300 mb-6 text-center">
+            Sign In
+          </h4>
+          <form onSubmit={handleSubmit} className="w-full">
+            <div className="mb-4">
+              <label
+                htmlFor="email"
+                className="block text-gray-700 dark:text-gray-200 mb-2"
+              >
+                Email or Username
+              </label>
+              <input
+                type="text"
+                id="email"
+                placeholder="Enter email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-400 transition duration-300"
+              />
             </div>
-          </div>
-          <div className="col-lg-5">
-            <div className="sign_in_from_relative">
-              <div className="sign_in_form">
-                <div className="">
-                  <h4 className="">Sign In</h4>
-                  <p className="">Sign in to your account to continue.</p>
 
-                  <form className="custom_form" onSubmit={handleSubmit}>
-                    <div className="">
-                      {/* <label
-                  htmlFor="email"
-                  className=""
-                >
-                  Email address
-                </label> */}
-                      <input
-                        type="text"
-                        id="email"
-                        className="mb-3"
-                        placeholder="Enter email address"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="mb-6">
-                      {/* <label
-                  htmlFor="password"
-                  className=""
-                >
-                  Password
-                </label> */}
-                      <input
-                        type="password"
-                        id="password"
-                        className="mb-3"
-                        placeholder="Enter your password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="">
-                      {/* <label className="">
-                  <input
-                    type="checkbox"
-                    className="mr-2"
-                  />
-                  Remember me
-                </label> */}
-                      {/* <Link
-                  to="/forgot-password"
-                  className=""
-                >
-                  Forgot password?
-                </Link> */}
-                    </div>
-                    {/* Error message */}
-                    {error && (
-                      <div className="text-red-600 text-sm mb-4">{error}</div>
-                    )}
-                    <div className="mb-6">
-                      <button type="submit" className="global_btn">
-                        Sign in
-                      </button>
-                    </div>
-
-                    {/* sign up ----- */}
-                    {/* <div className="">
-                <p className="text-sm text-gray-500">
-                  Don’t have an account?{' '}
-                  <Link
-                    to="/sign-up"
-                    className="text-blue-600 hover:underline"
-                  >
-                    Sign up
-                  </Link>
-                </p>
-              </div> */}
-                    {/* sign up end ----- */}
-                  </form>
-                </div>
-              </div>
+            <div className="mb-6">
+              <label
+                htmlFor="password"
+                className="block text-gray-700 dark:text-gray-200 mb-2"
+              >
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-400 transition duration-300"
+              />
             </div>
-          </div>
+
+            {error && <div className="text-red-600 text-sm mb-4">{error}</div>}
+
+            <div className="mb-6">
+              <button
+                type="submit"
+                className="w-full bg-slate-600 cursor-pointer dark:bg-gray-700 text-white py-2 rounded-md hover:bg-slate-700 dark:hover:bg-indigo-800 transition duration-300"
+              >
+                Sign In
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

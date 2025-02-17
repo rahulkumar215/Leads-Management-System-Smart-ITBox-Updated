@@ -7,7 +7,9 @@ import {
   FaHome,
   FaList,
   FaPlus,
+  FaBell,
 } from "react-icons/fa";
+import { MdLeaderboard } from "react-icons/md";
 import { RiDashboardHorizontalFill } from "react-icons/ri";
 import { SiGoogleanalytics } from "react-icons/si";
 import { BsBoxSeamFill } from "react-icons/bs";
@@ -15,6 +17,8 @@ import { FaUserGroup } from "react-icons/fa6";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { IoNotifications } from "react-icons/io5";
+import { ThemeContext } from "../../context/ThemeContext";
+import axios from "axios";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const navigate = useNavigate();
@@ -92,6 +96,50 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     });
   }, [location.pathname]);
 
+  const [adminAlerts, setAdminAlerts] = useState([]);
+
+  const { backendUrl } = useContext(ThemeContext);
+  const token = localStorage.getItem("token");
+
+  // Fetch TAT Alerts (Admin)
+  useEffect(() => {
+    const fetchAdminAlerts = async () => {
+      try {
+        const response = await axios.get(
+          `${backendUrl}/api/admin/all-tat-alerts`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setAdminAlerts(response.data.alerts);
+      } catch (error) {
+        console.error("Error fetching Admin TAT Alerts:", error);
+      }
+    };
+    fetchAdminAlerts();
+  }, [backendUrl, token]);
+
+  const [wrongNumberAlerts, setWrongNumberAlerts] = useState([]);
+
+  useEffect(() => {
+    fetchWrongNumberAlerts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fetchWrongNumberAlerts = async () => {
+    try {
+      console.log("📡 Fetching Wrong Number Alerts...");
+      console.log("🔑 Token being sent:", token);
+      const response = await axios.get(
+        `${backendUrl}/api/lead/wrong-number-alerts`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      console.log("Wrong number alerts", response.data);
+      setWrongNumberAlerts(response.data.wrongNumberAlerts);
+    } catch (error) {
+      console.error("❌ Error fetching Wrong Number Alerts:", error);
+      toast.error("Failed to fetch wrong number alerts");
+    }
+  };
+
   // Build the menuItems array based on the user's role
   let menuItems = [];
   if (role === "admin") {
@@ -109,7 +157,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       {
         route: "/admin/notification",
         icon: <IoNotifications />,
-        label: "Notifications",
+        label: `Notifications`,
+        value: adminAlerts.length,
       },
       {
         route: "/admin/manager-accounts",
@@ -126,17 +175,28 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         icon: <BsBoxSeamFill />,
         label: "Products",
       },
+      {
+        route: "/admin-reports",
+        icon: <SiGoogleanalytics />,
+        label: "Reports",
+      },
     ];
   } else if (role === "data_analyst") {
     menuItems = [
       {
         route: "/analyst-dashboard",
-        icon: <FaHome />,
+        icon: <RiDashboardHorizontalFill />,
         label: "Dashboard",
       },
       {
+        route: "/analyst-alerts",
+        icon: <FaBell />,
+        label: "Alerts",
+        value: wrongNumberAlerts.length,
+      },
+      {
         route: "/analyst-lead",
-        icon: <FaHome />,
+        icon: <MdLeaderboard />,
         label: "Leads",
       },
       {
@@ -230,6 +290,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 >
                   <span className="text-lg text-yellow-500">{item.icon}</span>
                   {item.label}
+                  {item.value && (
+                    <span className="justify-self-start px-1 rounded-4xl text-white bg-red-600">
+                      {item.value}
+                    </span>
+                  )}
                   {item.children &&
                     (openMenus[item.tMenuName] ? (
                       <FaChevronDown />

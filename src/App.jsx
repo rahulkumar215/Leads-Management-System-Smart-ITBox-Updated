@@ -5,7 +5,7 @@ import Sidebar from "./components/dashboard/Sidebar";
 import Header from "./components/dashboard/Header";
 import LeadList from "./components/dataAnalyst/LeadList";
 import PrivateRoute from "./components/auth/PrivateRoute";
-import AdminDashboard from "./components/admin/AdminDashboard";
+// import AdminDashboard from "./components/admin/AdminDashboard";
 import NotFound from "./components/NotFound";
 import CreateLead from "./components/dataAnalyst/CreateLead";
 import { ToastContainer } from "react-toastify";
@@ -24,10 +24,12 @@ import FollowUpAlerts from "./components/growthManager/FollowUpAlerts";
 import LeadDetails from "./components/admin/LeadDetails";
 import DataAnalystDashboard from "./components/dataAnalyst/DataAnalystDashboard";
 import GrowthManagerAnalytics from "./components/growthManager/GrowthManagerAnalytics";
-import AdminAnalytics from "./components/admin/AdminAnalytics";
+// import AdminAnalytics from "./components/admin/AdminAnalytics";
 import { useEffect, useState } from "react";
-import AdminDashboardDashboard from "./components/admin/AdminDashboardCombined";
+import AdminDashboard from "./components/admin/dashboard/AdminDashboard";
 import Notifications from "./components/admin/Notifications";
+import AdminReports from "./components/admin/reports/AdminReports";
+import Alerts from "./components/dataAnalyst/Alerts";
 
 function App() {
   return (
@@ -65,6 +67,16 @@ function App() {
             <PrivateRoute>
               <DashboardLayout>
                 <EditLead />
+              </DashboardLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/analyst-alerts"
+          element={
+            <PrivateRoute>
+              <DashboardLayout>
+                <Alerts />
               </DashboardLayout>
             </PrivateRoute>
           }
@@ -177,7 +189,17 @@ function App() {
           element={
             <PrivateRoute>
               <DashboardLayout>
-                <AdminDashboardDashboard />
+                <AdminDashboard />
+              </DashboardLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin-reports"
+          element={
+            <PrivateRoute>
+              <DashboardLayout>
+                <AdminReports />
               </DashboardLayout>
             </PrivateRoute>
           }

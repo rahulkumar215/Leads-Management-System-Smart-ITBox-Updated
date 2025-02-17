@@ -3,7 +3,13 @@ import { HiOutlineX } from "react-icons/hi";
 import { Bars } from "react-loader-spinner";
 import "react-toastify/dist/ReactToastify.css";
 
-const AddUserModal = ({ newUser, setNewUser, handleCreateUser, isLoading, onClose }) => {
+const AddUserModal = ({
+  newUser,
+  setNewUser,
+  handleCreateUser,
+  isLoading,
+  onClose,
+}) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     handleCreateUser();

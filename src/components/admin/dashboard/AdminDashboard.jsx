@@ -1,13 +1,13 @@
 import { useContext, useEffect, useState } from "react";
-import Layout from "../common/Layout";
-import { ThemeContext } from "../../context/ThemeContext";
+import Layout from "../../common/Layout";
+import { ThemeContext } from "../../../context/ThemeContext";
 import axios from "axios";
 import { BiSolidInfoCircle } from "react-icons/bi";
 import { DNA } from "react-loader-spinner";
-import PipelineStagesSection from "./dbcomponents/PipelineStagesSection";
-import LostLeadsByReasonSection from "./dbcomponents/LostLeadsByReasonSection";
-import OverallLeadAnalyticsSection from "./dbcomponents/OverallLeadAnalyticsSection";
-import UserSection from "./dbcomponents/UserSection";
+import PipelineStagesSection from "./PipelineStagesSection";
+import LostLeadsByReasonSection from "./LostLeadsByReasonSection";
+import OverallLeadAnalyticsSection from "./OverallLeadAnalyticsSection";
+import UserSection from "./UserSection";
 
 // Main Admin Dashboard Component
 const AdminDashboardCombined = () => {
