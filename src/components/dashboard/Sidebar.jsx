@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   FaChevronDown,
   FaChevronRight,
@@ -9,14 +9,16 @@ import {
   FaPlus,
   FaBell,
 } from "react-icons/fa";
-import { MdLeaderboard } from "react-icons/md";
+import { MdDashboard, MdLeaderboard } from "react-icons/md";
 import { RiDashboardHorizontalFill } from "react-icons/ri";
 import { SiGoogleanalytics } from "react-icons/si";
 import { BsBoxSeamFill } from "react-icons/bs";
-import { FaUserGroup } from "react-icons/fa6";
+import { FaBellConcierge, FaUserGroup } from "react-icons/fa6";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { IoNotifications } from "react-icons/io5";
+import { GrRefresh } from "react-icons/gr";
+import { LuCalendarClock, LuRefreshCw } from "react-icons/lu";
 import { ThemeContext } from "../../context/ThemeContext";
 import axios from "axios";
 
@@ -213,6 +215,18 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         label: "Dashboard",
       },
       {
+        route: "/sales-executive-notifications",
+        icon: <FaBell />,
+        label: "Notifications",
+        value: 5,
+      },
+      {
+        route: "/sales-executive-alerts",
+        icon: <FaBell />,
+        label: "Alerts",
+        value: 5,
+      },
+      {
         route: "/sales-executive-leads",
         icon: <FaHome />,
         label: "Leads",
@@ -222,17 +236,40 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     menuItems = [
       {
         route: "/growth-dashboard",
-        icon: <FaHome />,
+        icon: <MdDashboard />,
         label: "Dashboard",
       },
+      // {
+      //   route: "/growth-manager-analytics",
+      //   icon: <FaHome />,
+      //   label: "Analytics",
+      // },
       {
-        route: "/growth-manager-analytics",
-        icon: <FaHome />,
-        label: "Analytics",
+        route: "/growth-notifications",
+        icon: <FaBell />,
+        label: "Notifications",
+        value: 5,
+      },
+      {
+        route: "/growth-lead-deadlines",
+        icon: <LuCalendarClock />,
+        label: "Deadlines",
+        value: 5,
+      },
+      {
+        route: "/growth-lead-inprogess",
+        icon: <GrRefresh />,
+        label: "In-Progress",
+      },
+      {
+        route: "/follow-ups",
+        icon: <LuRefreshCw />,
+        label: "Follow Ups",
+        value: 1,
       },
       {
         route: "/growth-manager-leads",
-        icon: <FaHome />,
+        icon: <MdLeaderboard />,
         label: "Leads",
       },
     ];

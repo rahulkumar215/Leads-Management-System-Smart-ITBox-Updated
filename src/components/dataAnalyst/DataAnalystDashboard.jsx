@@ -39,8 +39,6 @@ const DataAnalystDashboard = () => {
   const { backendUrl } = useContext(ThemeContext);
   const token = localStorage.getItem("token");
 
-  const navigate = useNavigate();
-
   // State declarations
   const [wrongNumberAlerts, setWrongNumberAlerts] = useState([]);
   const [leads, setLeads] = useState([]);

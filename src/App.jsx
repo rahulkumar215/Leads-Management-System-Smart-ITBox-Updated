@@ -16,7 +16,7 @@ import AddInteraction from "./components/salesExecutive/AddInteraction";
 import SalesExecutiveDashboard from "./components/salesExecutive/SalesExecutiveDashboard";
 import GrowthManagerDashboard from "./components/growthManager/GrowthManagerDashboard";
 import GrowthManagerLeads from "./components/growthManager/GrowthManagerLeads";
-import ManageSteps from "./components/growthManager/ManageSteps";
+import ManageSteps from "./components/growthManager/managesteps/ManageSteps";
 import ProductList from "./components/admin/product/ProductList";
 import ManageAccounts from "./components/admin/ManageAccounts";
 import AllLeads from "./components/admin/AllLeads";
@@ -30,6 +30,11 @@ import AdminDashboard from "./components/admin/dashboard/AdminDashboard";
 import Notifications from "./components/admin/Notifications";
 import AdminReports from "./components/admin/reports/AdminReports";
 import Alerts from "./components/dataAnalyst/Alerts";
+import GrowthManagerNotifications from "./components/growthManager/GrowthManagerNotifications";
+import DeadLineStages from "./components/growthManager/DeadLineStages";
+import InProgressStages from "./components/growthManager/InProgressStages";
+import SalesExecutiveNotifications from "./components/salesExecutive/SalesExecutiveNotifications";
+import SalesExecutiveAlerts from "./components/salesExecutive/SalesExecutiveAlerts";
 
 function App() {
   return (
@@ -103,6 +108,26 @@ function App() {
           }
         />
         <Route
+          path="/sales-executive-notifications"
+          element={
+            <PrivateRoute>
+              <DashboardLayout>
+                <SalesExecutiveNotifications />
+              </DashboardLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/sales-executive-alerts"
+          element={
+            <PrivateRoute>
+              <DashboardLayout>
+                <SalesExecutiveAlerts />
+              </DashboardLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
           path="/sales-executive-leads"
           element={
             <PrivateRoute>
@@ -139,6 +164,36 @@ function App() {
             <PrivateRoute>
               <DashboardLayout>
                 <GrowthManagerDashboard />
+              </DashboardLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/growth-notifications"
+          element={
+            <PrivateRoute>
+              <DashboardLayout>
+                <GrowthManagerNotifications />
+              </DashboardLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/growth-lead-deadlines"
+          element={
+            <PrivateRoute>
+              <DashboardLayout>
+                <DeadLineStages />
+              </DashboardLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/growth-lead-inprogess"
+          element={
+            <PrivateRoute>
+              <DashboardLayout>
+                <InProgressStages />
               </DashboardLayout>
             </PrivateRoute>
           }
