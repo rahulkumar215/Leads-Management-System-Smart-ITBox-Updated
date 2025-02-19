@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Layout from "../../common/Layout";
 import { ThemeContext } from "../../../context/ThemeContext";
 import { useParams } from "react-router-dom";
@@ -14,7 +14,6 @@ import {
 import AddNewStage from "./AddNewStage";
 import { DNA } from "react-loader-spinner";
 import { MarkCompanyAsLostModal } from "./MarkCompanyAsLostModal";
-import { ProductSelectModal } from "./ProductSelectModal";
 import { ProductsTable } from "./ProductsTable";
 import { ContactPersonsTable } from "./ContactPersonTable";
 
@@ -24,32 +23,14 @@ const ManageSteps = () => {
   const token = localStorage.getItem("token");
 
   const [stages, setStages] = useState([]);
-  const [newStage, setNewStage] = useState({
-    stage: "",
-    callDate: new Date().toISOString().split("T")[0],
-    followUpDate: "",
-    followUpTime: "",
-    remark: "",
-    uselessLead: false,
-    products: [],
-    totalPrice: 0,
-    tatDeadline: "",
-    delayDays: 0,
-  });
+
   const [tatAlert, setTatAlert] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [selectedProducts, setSelectedProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [savingStage, setSavingStage] = useState(false);
 
   // Modal states
   const [showStageModal, setShowStageModal] = useState(false);
   const [showLostModal, setShowLostModal] = useState(false);
-  const [showProductModal, setShowProductModal] = useState(false);
   // const [lead, setLead] = useState({});
-
-  // State for Company Lost modal
-  const [companyLostReason, setCompanyLostReason] = useState("");
 
   // TAT Mapping
   const tatMapping = {
@@ -101,18 +82,10 @@ const ManageSteps = () => {
   //   getAllGrowthLeads();
   // }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      await Promise.all([fetchLeadStages(), fetchProducts()]);
-      setIsLoading(false);
-    };
-    fetchData();
-    // eslint-disable-next-line
-  }, []);
-
   const fetchLeadStages = async () => {
     try {
+      setIsLoading(true);
+
       const response = await axios.get(
         `${backendUrl}/api/lead/get-lead-stages/${leadId}`,
         { headers: { Authorization: `Bearer ${token}` } }
@@ -124,22 +97,15 @@ const ManageSteps = () => {
     } catch (error) {
       console.error("Error fetching lead stages:", error);
       toast.error("Error fetching lead stages");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const fetchProducts = async () => {
-    try {
-      const response = await axios.get(`${backendUrl}/api/admin/products`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (response.data.success) {
-        setProducts(response.data.products);
-      }
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      toast.error("Error fetching products");
-    }
-  };
+  useEffect(() => {
+    fetchLeadStages();
+    // eslint-disable-next-line
+  }, []);
 
   const checkTatAlert = (pipeline) => {
     const today = new Date();
@@ -157,155 +123,6 @@ const ManageSteps = () => {
     }
   };
 
-  const handleStageChange = (e) => {
-    const stage = e.target.value;
-    const tatDays = tatMapping[stage] || 0;
-    const tatDeadline = new Date(
-      new Date().setDate(new Date().getDate() + tatDays)
-    )
-      .toISOString()
-      .split("T")[0];
-
-    setNewStage((prev) => ({
-      ...prev,
-      stage,
-      callDate: new Date().toISOString().split("T")[0],
-      tatDeadline,
-      delayDays: 0,
-      followUpDate: "",
-      followUpTime: "",
-      remark: "",
-      products: [],
-      totalPrice: 0,
-    }));
-
-    // Open the product selection modal if needed
-    if (stage === "Solution Deck Creation") {
-      setShowProductModal(true);
-    }
-  };
-
-  const handleProductSelection = (product, isChecked) => {
-    if (isChecked) {
-      setSelectedProducts((prev) => [
-        ...prev,
-        {
-          productId: product._id,
-          name: product.name,
-          quantity: 1,
-          pricePerUnit: 0,
-          totalAmount: 0,
-        },
-      ]);
-    } else {
-      setSelectedProducts((prev) =>
-        prev.filter((p) => p.productId !== product._id)
-      );
-    }
-  };
-
-  const handleProductChange = (productId, field, value) => {
-    setSelectedProducts((prev) =>
-      prev.map((p) =>
-        p.productId === productId
-          ? {
-              ...p,
-              [field]: Number(value),
-              totalAmount:
-                field === "pricePerUnit"
-                  ? p.quantity * Number(value)
-                  : Number(value) * p.pricePerUnit,
-            }
-          : p
-      )
-    );
-  };
-
-  const handleSaveProducts = () => {
-    const totalPrice = selectedProducts.reduce(
-      (sum, prod) => sum + prod.totalAmount,
-      0
-    );
-
-    setNewStage((prev) => ({
-      ...prev,
-      products: [...selectedProducts],
-      totalPrice: totalPrice,
-    }));
-
-    setShowProductModal(false);
-  };
-
-  const handleAddStage = async () => {
-    setSavingStage(true);
-    try {
-      const response = await axios.post(
-        `${backendUrl}/api/lead/update-lead-stage/${leadId}`,
-        newStage,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (response.data.lead) {
-        setStages(response.data.lead.growthManagerPipeline);
-        toast.success("Stage added successfully!");
-        // Reset form
-        setNewStage({
-          stage: "",
-          callDate: new Date().toISOString().split("T")[0],
-          tatDeadline: "",
-          delayDays: 0,
-          followUpDate: "",
-          followUpTime: "",
-          remark: "",
-          uselessLead: false,
-          products: [],
-          totalPrice: 0,
-        });
-        setSelectedProducts([]);
-        setShowStageModal(false);
-      }
-    } catch (error) {
-      console.error(
-        "API Error:",
-        error.response ? error.response.data : error.message
-      );
-      toast.error(
-        `Error: ${
-          error.response
-            ? error.response.data.message
-            : "Server Error. Try again."
-        }`
-      );
-    } finally {
-      setSavingStage(false);
-    }
-  };
-
-  const handleMarkCompanyLost = async () => {
-    if (!companyLostReason) {
-      toast.error("Please select a reason for company lost.");
-      return;
-    }
-
-    setSavingStage(true);
-    try {
-      const response = await axios.put(
-        `${backendUrl}/api/lead/mark-company-lost/${leadId}`,
-        { isCompanyLost: true, companyLostReason },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      toast.success(response.data.message);
-      fetchLeadStages();
-      setShowLostModal(false);
-    } catch (error) {
-      console.error("Error marking company as lost:", error);
-      toast.error("Error marking company as lost");
-    } finally {
-      setSavingStage(false);
-    }
-  };
-
   const renderStageIcon = (stage) => {
     const today = new Date();
     if (stage.completed) {
@@ -316,6 +133,15 @@ const ManageSteps = () => {
       return <FaHourglassHalf className="text-yellow-500 w-6 h-6" />;
     }
   };
+
+  // Add these lines inside the ManageSteps component (e.g., right before the return statement)
+  const stagesOrder = Object.keys(tatMapping);
+  const completedStages = stages.filter((s) => s.completed).map((s) => s.stage);
+  const lastCompletedIndex =
+    completedStages.length > 0
+      ? Math.max(...completedStages.map((stage) => stagesOrder.indexOf(stage)))
+      : -1;
+  const nextStage = stagesOrder[lastCompletedIndex + 1] || null;
 
   return (
     <Layout>
@@ -342,20 +168,22 @@ const ManageSteps = () => {
 
             <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-4">
               <h2 className="text-2xl font-bold">Lead Stages</h2>
-              <div className=" flex flex-col md:flex-row gap-2">
-                <button
-                  onClick={() => setShowStageModal(true)}
-                  className="flex items-center justify-center gap-2 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition"
-                >
-                  <FaPlus /> Add New Stage
-                </button>
-                <button
-                  onClick={() => setShowLostModal(true)}
-                  className="flex items-center justify-center gap-2 cursor-pointer bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition"
-                >
-                  <FaExclamationTriangle /> Mark Company as Lost
-                </button>
-              </div>
+              {nextStage && (
+                <div className=" flex flex-col md:flex-row gap-2">
+                  <button
+                    onClick={() => setShowStageModal(true)}
+                    className="flex items-center justify-center gap-2 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition"
+                  >
+                    <FaPlus /> Add New Stage
+                  </button>
+                  <button
+                    onClick={() => setShowLostModal(true)}
+                    className="flex items-center justify-center gap-2 cursor-pointer bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition"
+                  >
+                    <FaExclamationTriangle /> Mark Company as Lost
+                  </button>
+                </div>
+              )}
             </div>
             <ul className="space-y-4 sm:p-2 sm:bg-gray-100 rounded-md shadow-md broder border-gray-200">
               {stages.map((stage, index) => (
@@ -443,12 +271,13 @@ const ManageSteps = () => {
         {showStageModal && (
           <AddNewStage
             setShowStageModal={setShowStageModal}
-            newStage={newStage}
-            handleStageChange={handleStageChange}
             tatMapping={tatMapping}
-            setNewStage={setNewStage}
-            handleAddStage={handleAddStage}
-            isLoading={savingStage}
+            stages={stages}
+            backendUrl={backendUrl}
+            token={token}
+            setStages={setStages}
+            leadId={leadId}
+            fetchLeadStages={fetchLeadStages}
           />
         )}
 
@@ -456,21 +285,10 @@ const ManageSteps = () => {
         {showLostModal && (
           <MarkCompanyAsLostModal
             setShowLostModal={setShowLostModal}
-            companyLostReason={companyLostReason}
-            setCompanyLostReason={setCompanyLostReason}
-            handleMarkCompanyLost={handleMarkCompanyLost}
-            isLoading={savingStage}
-          />
-        )}
-
-        {/* Product Selection Modal */}
-        {showProductModal && (
-          <ProductSelectModal
-            setShowProductModal={setShowProductModal}
-            products={products}
-            handleProductSelection={handleProductSelection}
-            handleProductChange={handleProductChange}
-            handleSaveProducts={handleSaveProducts}
+            backendUrl={backendUrl}
+            fetchLeadStages={fetchLeadStages}
+            token={token}
+            leadId={leadId}
           />
         )}
       </div>

@@ -66,9 +66,26 @@ const AllLeads = () => {
   // Helper function to mark new leads (created today)
   const isNewLead = (createdAt) => {
     if (!createdAt) return false;
-    const leadDate = new Date(createdAt).setHours(0, 0, 0, 0);
-    const today = new Date().setHours(0, 0, 0, 0);
-    return leadDate === today;
+
+    const leadDate = new Date(createdAt);
+    const today = new Date();
+
+    if (isNaN(leadDate)) return false; // Check if createdAt is a valid date
+
+    // Convert both dates to UTC midnight for comparison
+    const leadMidnight = Date.UTC(
+      leadDate.getFullYear(),
+      leadDate.getMonth(),
+      leadDate.getDate()
+    );
+
+    const todayMidnight = Date.UTC(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
+
+    return leadMidnight === todayMidnight;
   };
 
   // Pagination calculations
@@ -137,7 +154,7 @@ const AllLeads = () => {
               {leadsLoading ? (
                 <tr>
                   <td colSpan="8">
-                    <div className="flex justify-center py-4">
+                    <div className="flex justify-center">
                       <DNA
                         visible={true}
                         height="40"
@@ -184,7 +201,14 @@ const AllLeads = () => {
                             : "text-red-600"
                         }`}
                       >
-                        {lead.status}
+                        <span
+                          className={`${
+                            lead.status === "draft" &&
+                            "px-1 border border-gray-400 rounded-lg bg-gray-200 text-gray-700"
+                          }`}
+                        >
+                          {lead.status}
+                        </span>
                       </td>
                       <td
                         className={`px-2 py-1 text-center hidden md:table-cell capitalize ${

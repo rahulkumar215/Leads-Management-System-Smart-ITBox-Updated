@@ -135,7 +135,7 @@ const ProductList = () => {
               {loading ? (
                 <tr>
                   <td colSpan="4">
-                    <div className="flex justify-center py-4">
+                    <div className="flex justify-center">
                       <DNA
                         height="40"
                         width="40"
@@ -157,7 +157,9 @@ const ProductList = () => {
                     <td className="px-2 py-1 capitalize font-semibold text-gray-800">
                       {product.name}
                     </td>
-                    <td className="px-2 py-1">{product.rate || "-"}</td>
+                    <td className="px-2 py-1">
+                      {product.originalPrice || "-"}
+                    </td>
                     <td className="px-2 py-1 text-center space-x-2">
                       <button
                         className="text-green-700 cursor-pointer rounded hover:text-green-800"

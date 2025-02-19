@@ -1,20 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Bars } from "react-loader-spinner";
+import { ThemeContext } from "../../../context/ThemeContext";
 
 const EditProductModal = ({ onClose, initialData, onSubmit }) => {
+  const { backendUrl } = useContext(ThemeContext);
+
   const [formData, setFormData] = useState({
-    productName: "",
-    rate: "",
+    name: "",
+    originalPrice: "",
   });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (initialData) {
       setFormData({
-        productName: initialData.name,
-        rate: initialData.rate || "",
+        name: initialData.name,
+        originalPrice: initialData.originalPrice || "",
       });
     }
   }, [initialData]);
@@ -34,7 +37,7 @@ const EditProductModal = ({ onClose, initialData, onSubmit }) => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `https://your-backend-url/api/admin/products/${initialData._id}`,
+        `${backendUrl}/api/admin/products/${initialData._id}`,
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -76,8 +79,8 @@ const EditProductModal = ({ onClose, initialData, onSubmit }) => {
               </label>
               <input
                 type="text"
-                name="productName"
-                value={formData.productName}
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
                 disabled={loading}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-700"
@@ -90,8 +93,8 @@ const EditProductModal = ({ onClose, initialData, onSubmit }) => {
               </label>
               <input
                 type="number"
-                name="rate"
-                value={formData.rate}
+                name="originalPrice"
+                value={formData.originalPrice}
                 onChange={handleChange}
                 disabled={loading}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-700"

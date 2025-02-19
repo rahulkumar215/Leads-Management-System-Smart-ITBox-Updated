@@ -227,6 +227,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         value: 5,
       },
       {
+        route: "/sales-executive-followups",
+        icon: <LuRefreshCw />,
+        label: "Follow Up",
+        value: 5,
+      },
+      {
         route: "/sales-executive-leads",
         icon: <FaHome />,
         label: "Leads",

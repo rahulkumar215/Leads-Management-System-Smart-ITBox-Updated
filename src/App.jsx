@@ -12,7 +12,7 @@ import { ToastContainer } from "react-toastify";
 import EditLead from "./components/dataAnalyst/EditLead";
 import SalesExecutiveLeads from "./components/salesExecutive/SalesExecutiveLeads";
 import EditContactData from "./components/salesExecutive/EditContactData";
-import AddInteraction from "./components/salesExecutive/AddInteraction";
+// import AddInteraction from "./components/salesExecutive/AddInteraction";
 import SalesExecutiveDashboard from "./components/salesExecutive/SalesExecutiveDashboard";
 import GrowthManagerDashboard from "./components/growthManager/GrowthManagerDashboard";
 import GrowthManagerLeads from "./components/growthManager/GrowthManagerLeads";
@@ -35,6 +35,7 @@ import DeadLineStages from "./components/growthManager/DeadLineStages";
 import InProgressStages from "./components/growthManager/InProgressStages";
 import SalesExecutiveNotifications from "./components/salesExecutive/SalesExecutiveNotifications";
 import SalesExecutiveAlerts from "./components/salesExecutive/SalesExecutiveAlerts";
+import SalesExecutiveFollowUps from "./components/salesExecutive/SalesExecutiveFollowUps";
 
 function App() {
   return (
@@ -138,6 +139,16 @@ function App() {
           }
         />
         <Route
+          path="/sales-executive-followups"
+          element={
+            <PrivateRoute>
+              <DashboardLayout>
+                <SalesExecutiveFollowUps />
+              </DashboardLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
           path="/manage/contact/:leadId"
           element={
             <PrivateRoute>
@@ -147,7 +158,7 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route
+        {/* <Route
           path="/manage/interaction/:leadId"
           element={
             <PrivateRoute>
@@ -156,7 +167,7 @@ function App() {
               </DashboardLayout>
             </PrivateRoute>
           }
-        />
+        /> */}
         {/* Growth Manager Routes */}
         <Route
           path="/growth-dashboard"

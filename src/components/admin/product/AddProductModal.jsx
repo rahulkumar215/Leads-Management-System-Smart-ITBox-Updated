@@ -1,11 +1,17 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Bars } from "react-loader-spinner";
+import { ThemeContext } from "./../../../context/ThemeContext";
 
 const AddProductModal = ({ onClose, onSubmit }) => {
-  const [product, setProduct] = useState({ productName: "", rate: "" });
+  const [product, setProduct] = useState({
+    name: "",
+    originalPrice: "",
+  });
   const [loading, setLoading] = useState(false);
+
+  const { backendUrl } = useContext(ThemeContext);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -19,7 +25,7 @@ const AddProductModal = ({ onClose, onSubmit }) => {
       const token = localStorage.getItem("token");
 
       // Send single product data to API
-      await axios.post("https://your-backend-url/api/admin/products", product, {
+      await axios.post(`${backendUrl}/api/admin/products`, product, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -59,8 +65,8 @@ const AddProductModal = ({ onClose, onSubmit }) => {
             <label className="block mb-1 text-gray-700">Product Name</label>
             <input
               type="text"
-              name="productName"
-              value={product.productName}
+              name="name"
+              value={product.name}
               onChange={handleInputChange}
               placeholder="Product Name"
               required
@@ -72,8 +78,8 @@ const AddProductModal = ({ onClose, onSubmit }) => {
             <label className="block mb-1 text-gray-700">Rate</label>
             <input
               type="number"
-              name="rate"
-              value={product.rate}
+              name="originalPrice"
+              value={product.originalPrice}
               onChange={handleInputChange}
               placeholder="Rate"
               required

@@ -1,13 +1,44 @@
+import axios from "axios";
+import { useState } from "react";
 import { HiOutlineX } from "react-icons/hi";
 import { Bars } from "react-loader-spinner";
+import { toast } from "react-toastify";
 
 export function MarkCompanyAsLostModal({
   setShowLostModal,
-  companyLostReason,
-  setCompanyLostReason,
-  handleMarkCompanyLost,
-  isLoading,
+  backendUrl,
+  fetchLeadStages,
+  token,
+  leadId,
 }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [companyLostReason, setCompanyLostReason] = useState("");
+
+  const handleMarkCompanyLost = async () => {
+    if (!companyLostReason) {
+      toast.error("Please select a reason for company lost.");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await axios.put(
+        `${backendUrl}/api/lead/mark-company-lost/${leadId}`,
+        { isCompanyLost: true, companyLostReason },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast.success(response.data.message);
+      fetchLeadStages();
+      setShowLostModal(false);
+    } catch (error) {
+      console.error("Error marking company as lost:", error);
+      toast.error("Error marking company as lost");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 flex items-start sm:items-center justify-center bg-black/30 z-50">
       <div className="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/3 transform transition-all mt-24 sm:mt-0 duration-300">

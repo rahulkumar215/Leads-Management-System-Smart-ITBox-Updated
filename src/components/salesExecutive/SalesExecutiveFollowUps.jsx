@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useMemo } from "react";
+import { useContext, useEffect, useState, useMemo } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
@@ -6,31 +6,30 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { DNA } from "react-loader-spinner";
 import Layout from "../common/Layout";
-import { BiSolidErrorAlt } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import { MdOutlineOpenInNew } from "react-icons/md";
 
-function SalesExecutiveAlerts() {
+function SalesExecutiveFollowUps() {
   const { backendUrl } = useContext(ThemeContext);
   const token = localStorage.getItem("token");
 
-  const navigate = useNavigate();
-
-  // State for TAT alerts and loading
-  const [tatAlerts, setTatAlerts] = useState([]);
+  // State for follow-up alerts and loading indicator
+  const [followUpAlerts, setFollowUpAlerts] = useState([]);
   const [loading, setLoading] = useState(false);
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCompany, setFilterCompany] = useState("");
-  const [filterAlertType, setFilterAlertType] = useState("");
+  const [filterFollowUpType, setFilterFollowUpType] = useState("");
+
+  const navigate = useNavigate();
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 10;
 
   useEffect(() => {
-    const fetchTATAlerts = async () => {
+    const fetchFollowUpAlerts = async () => {
       setLoading(true);
       try {
         const response = await axios.get(
@@ -39,57 +38,60 @@ function SalesExecutiveAlerts() {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        setTatAlerts(response.data.tatAlerts);
-        console.log("TAT Alerts", response.data.tatAlerts);
+        // We assume that the API returns followUpAlerts in the response
+        setFollowUpAlerts(response.data.followUpAlerts);
+        console.log("Follow-Up Alerts", response.data.followUpAlerts);
       } catch (error) {
         console.error(
-          "❌ Error fetching TAT alerts:",
+          "❌ Error fetching follow-up alerts:",
           error.response?.data || error.message
         );
-        toast.error("Failed to fetch TAT alerts");
+        toast.error("Failed to fetch follow-up alerts");
       } finally {
         setLoading(false);
       }
     };
-    fetchTATAlerts();
+
+    fetchFollowUpAlerts();
   }, [backendUrl, token]);
 
-  // Build dropdown options for Company filter
+  // Build dropdown options for company filter
   const uniqueCompanies = useMemo(() => {
-    const companies = tatAlerts.map((alert) => alert.companyName);
+    const companies = followUpAlerts.map((alert) => alert.companyName);
     return [...new Set(companies)];
-  }, [tatAlerts]);
+  }, [followUpAlerts]);
 
-  // Build dropdown options for Company filter
   const uniqueAlertTypes = useMemo(() => {
-    const companies = tatAlerts.map((alert) => alert.tatType);
+    const companies = followUpAlerts.map((alert) => alert.followUpType);
     return [...new Set(companies)];
-  }, [tatAlerts]);
+  }, [followUpAlerts]);
 
-  // Filter TAT alerts based on search term, company, and date range (if createdAt exists)
+  // Filter follow-up alerts based on search, company, and date range
   const filteredAlerts = useMemo(() => {
-    return tatAlerts
+    return followUpAlerts
       .filter((alert) => {
-        // Check date filters (if alert.createdAt is available)
-
         if (filterCompany && alert.companyName !== filterCompany) {
           return false;
         }
 
         if (
-          filterAlertType &&
-          alert.tatType &&
-          alert.tatType !== filterAlertType
+          filterFollowUpType &&
+          alert.followUpType &&
+          alert.followUpType !== filterFollowUpType
         ) {
           return false;
         }
 
         if (searchTerm) {
           const search = searchTerm.toLowerCase();
-          // Check if either companyName or tatType matches the search term
           if (
+            !alert.contactName.toLowerCase().includes(search) &&
             !alert.companyName.toLowerCase().includes(search) &&
-            !alert.tatType.toLowerCase().includes(search)
+            !alert.followUpType.toLowerCase().includes(search) &&
+            !(
+              alert.followUpTime &&
+              alert.followUpTime.toLowerCase().includes(search)
+            )
           ) {
             return false;
           }
@@ -97,8 +99,8 @@ function SalesExecutiveAlerts() {
         return true;
       })
       .slice() // create a shallow copy
-      .reverse(); // show newest alerts first
-  }, [tatAlerts, filterCompany, filterAlertType, searchTerm]);
+      .reverse(); // Show newest alerts first
+  }, [followUpAlerts, filterCompany, filterFollowUpType, searchTerm]);
 
   // Pagination calculations
   const offset = currentPage * itemsPerPage;
@@ -109,7 +111,12 @@ function SalesExecutiveAlerts() {
   return (
     <Layout>
       <div className="p-2">
-        <h4 className="text-xl font-semibold mb-4">⏳ TAT Alerts</h4>
+        <h5
+          className="text-xl font-semibold mb-4"
+          style={{ marginTop: "20px", marginBottom: "15px" }}
+        >
+          📅 Today's Follow-Ups
+        </h5>
 
         {/* Filters */}
         <div className="grid grid-cols-2 sm:grid-cols-[2fr_repeat(2,_1fr)] gap-2 sm:gap-4 items-center mb-4">
@@ -122,7 +129,7 @@ function SalesExecutiveAlerts() {
             </label>
             <input
               type="text"
-              placeholder="Search by company or TAT type..."
+              placeholder="Search by name, company, or type..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -154,9 +161,9 @@ function SalesExecutiveAlerts() {
           <div className="flex flex-col w-full">
             <label htmlFor="selectsalesex">Select Sales Executive</label>
             <select
-              value={filterAlertType}
+              value={filterFollowUpType}
               onChange={(e) => {
-                setFilterAlertType(e.target.value);
+                setFilterFollowUpType(e.target.value);
                 setCurrentPage(0);
               }}
               className="px-2 py-1 border border-gray-300 rounded-md"
@@ -171,25 +178,30 @@ function SalesExecutiveAlerts() {
           </div>
         </div>
 
-        {/* Table of TAT Alerts */}
+        {/* Table of Follow-Up Alerts */}
         <div className="overflow-x-auto shadow-md rounded-lg border border-gray-300">
           <table className="min-w-full table-auto border-collapse">
             <thead className="bg-gray-800 text-white text-left">
               <tr>
                 <th className="px-2 py-1 text-sm font-semibold">S.No.</th>
-                <th className="px-2 py-1 text-sm font-semibold">Lead Id</th>
-                <th className="px-2 py-1 text-sm font-semibold">Company</th>
-                <th className="px-2 py-1 text-sm font-semibold min-w-52">
-                  TAT Type
+                <th className="px-2 py-1 text-sm font-semibold min-w-22">
+                  Time
                 </th>
-                <th className="px-2 py-1 text-sm font-semibold">Overdue</th>
+                <th className="px-2 py-1 text-sm font-semibold">Lead Id.</th>
+                <th className="px-2 py-1 text-sm font-semibold min-w-36">
+                  Company
+                </th>
+                <th className="px-2 py-1 text-sm font-semibold min-w-36">
+                  Contact Name
+                </th>
+                <th className="px-2 py-1 text-sm font-semibold">Type</th>
                 <th className="px-2 py-1 text-sm font-semibold">Action</th>
               </tr>
             </thead>
             <tbody className="bg-white">
               {loading ? (
                 <tr>
-                  <td colSpan={6}>
+                  <td colSpan={7}>
                     <div className="flex justify-center">
                       <DNA
                         visible={true}
@@ -205,26 +217,37 @@ function SalesExecutiveAlerts() {
               ) : currentPageData.length === 0 ? (
                 <tr>
                   <td colSpan="5" className="text-center">
-                    No TAT alerts found.
+                    No follow-up alerts found.
                   </td>
                 </tr>
               ) : (
                 currentPageData.map((alert, index) => (
-                  <tr key={index} className="border-b border-gray-200">
+                  <tr
+                    key={index}
+                    className="border-b border-gray-200 divide-x divide-gray-200"
+                  >
                     <td className="px-2 py-1">{offset + index + 1}</td>
+                    <td className="px-2 py-1">
+                      {alert.followUpTime
+                        ? new Date(
+                            `1970-01-01T${alert.followUpTime}`
+                          ).toLocaleTimeString("en-US", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true, // ✅ Converts to 12-hour format
+                          })
+                        : "Not Set"}
+                    </td>
                     <td className="px-2 py-1 text-green-700 font-semibold">
                       {alert.leadId.slice(-5).toUpperCase()}
                     </td>
-                    <td className="px-2 py-1 flex items-center gap-1 text-gray-700 font-semibold">
+                    <td className="px-2 py-1 text-gray-700 font-semibold">
                       {alert.companyName}
                     </td>
-                    <td className="px-2 py-1">{alert.tatType}</td>
-                    <td className="px-2 py-1 text-red-500">
-                      <span className=" font-semibold text-red-600">
-                        {alert.daysOverdue}
-                      </span>{" "}
-                      day
-                      {alert.daysOverdue !== 1 && "s"}
+                    <td className="px-2 py-1 ">{alert.contactName}</td>
+
+                    <td className="px-2 py-1 capitalize">
+                      {alert.followUpType}
                     </td>
                     <td className="px-2 py-1">
                       <button
@@ -277,4 +300,4 @@ function SalesExecutiveAlerts() {
   );
 }
 
-export default SalesExecutiveAlerts;
+export default SalesExecutiveFollowUps;

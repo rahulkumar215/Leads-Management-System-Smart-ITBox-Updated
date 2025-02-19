@@ -94,7 +94,7 @@ const CreateLead = () => {
       );
       if (response.data.success) {
         toast.success(response.data.message);
-        navigate("/analyst-leads");
+        navigate("/analyst-lead");
       } else {
         toast.error(response.data.message);
       }

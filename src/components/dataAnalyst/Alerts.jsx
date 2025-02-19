@@ -254,6 +254,9 @@ const Alerts = () => {
                   S.No.
                 </th>
                 <th className="px-2 py-1 font-semibold text-sm text-left">
+                  Lead Id
+                </th>
+                <th className="px-2 py-1 font-semibold text-sm text-left">
                   Company Name
                 </th>
                 <th className="px-2 py-1 font-semibold text-sm text-left">
@@ -311,7 +314,12 @@ const Alerts = () => {
                       <td className="px-2 py-1 hidden sm:table-cell">
                         {offset + index + 1}
                       </td>
-                      <td className="px-2 py-1">{alert.companyName}</td>
+                      <td className="px-2 py-1 uppercase font-semibold text-green-700">
+                        {alert.leadId.slice(-5)}
+                      </td>
+                      <td className="px-2 py-1 font-semibold text-gray-700">
+                        {alert.companyName}
+                      </td>
                       <td className="px-2 py-1">{alert.contactPerson}</td>
                       <td className="px-2 py-1">{alert.contactPhone}</td>
                       {/* Sales Ex visible on desktop */}

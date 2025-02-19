@@ -53,8 +53,15 @@ const DeadLineStages = () => {
         (stage) => !stage.completed
       );
 
-      setStages(inProgressStages);
-      console.log("🔹 Fetched stages:", inProgressStages);
+      // ✅ Filter stages with TAT deadlines **due today**
+      const todayDeadlineStages = inProgressStages.filter(
+        (stage) =>
+          new Date(stage.tatDeadline).toDateString() ===
+          new Date().toDateString()
+      );
+
+      setStages(todayDeadlineStages);
+      console.log("🔹 Fetched stages:", todayDeadlineStages);
     } catch (error) {
       console.error("❌ Error fetching stages:", error);
       toast.error("Failed to fetch deadline stages");
@@ -212,13 +219,16 @@ const DeadLineStages = () => {
                   S.No.
                 </th>
                 <th className="px-2 py-1 font-semibold text-sm text-left">
+                  Lead Id
+                </th>
+                <th className="px-2 py-1 font-semibold text-sm text-left">
                   Company Name
                 </th>
                 <th className="px-2 py-1 font-semibold text-sm text-left">
                   Stage
                 </th>
                 <th className="px-2 py-1 font-semibold text-sm text-left">
-                  Deadline
+                  Follow Up Date
                 </th>
                 <th className="px-2 py-1 font-semibold text-sm text-left">
                   Remark
@@ -259,13 +269,16 @@ const DeadLineStages = () => {
                     <td className="px-2 py-1  hidden sm:table-cell">
                       {offset + index + 1}
                     </td>
-                    <td className="px-2 py-1 font-semibold text-gray-800 flex items-center gap-1">
+                    <td className="px-2 py-1 uppercase font-semibold text-green-800">
+                      {stage.leadId.slice(-5)}
+                    </td>
+                    <td className="px-2 py-1 font-semibold text-gray-800">
                       {stage.companyName || "Unknown Company"}
                     </td>
                     <td className="px-2 py-1">{stage.stage}</td>
                     <td className="px-2 py-1">
                       {stage.tatDeadline
-                        ? new Date(stage.tatDeadline).toLocaleDateString(
+                        ? new Date(stage.followUpDate).toLocaleDateString(
                             "en-IN",
                             { day: "2-digit", month: "short", year: "numeric" }
                           )
@@ -275,7 +288,7 @@ const DeadLineStages = () => {
                     <td className="px-2 py-1">
                       <button
                         onClick={() =>
-                          navigate(`/growth-manager-leads/${stage._id}`)
+                          navigate(`/growth-manager-leads/${stage.leadId}`)
                         }
                         className="text-green-600 cursor-pointer hover:text-green-800 underline"
                       >

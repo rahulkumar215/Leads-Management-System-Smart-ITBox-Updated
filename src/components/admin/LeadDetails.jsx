@@ -151,20 +151,3 @@ const LeadDetails = () => {
 };
 
 export default LeadDetails;
-
-{
-  /* Products Section */
-}
-{
-  /* <div className="products-section mt-10">
-          <h3 className="text-xl font-semibold mb-4">Products</h3>
-          {lead.growthManagerPipeline
-            .filter(
-              (stage) =>
-                stage.completed && stage.products && stage.products.length > 0
-            )
-            .map((stage, idx) => (
-              <ProductsTable key={idx} stage={stage} />
-            ))}
-        </div> */
-}

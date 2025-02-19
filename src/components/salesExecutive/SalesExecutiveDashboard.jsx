@@ -23,23 +23,31 @@ const Card = ({
   title,
   count,
   icon,
-  color = "text-red-600",
-  classes = "",
+  divClass = "",
+  titleClass = "",
+  iconClass = "",
+  countClass = "text-red-600",
   route,
 }) => {
   const navigate = useNavigate();
   return (
     <div
       className={`grid grid-cols-[1fr_min-content] gap-4 bg-white grid-rows-2 items-center border border-gray-100 
-      p-4 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer ${classes}`}
+      p-4 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer ${divClass}`}
       onClick={() => navigate(route)}
     >
-      <h3 className="text-lg font-semibold col-start-1 col-span-1 text-gray-600">
+      <h3
+        className={`text-lg font-semibold col-start-1 col-span-1 text-gray-600 ${titleClass}`}
+      >
         {title}
       </h3>
-      <div className="text-gray-400 transition-colors duration-300">{icon}</div>
+      <div
+        className={`text-gray-400 transition-colors duration-300 ${iconClass}`}
+      >
+        {icon}
+      </div>
       <p
-        className={`text-[3rem] font-bold ${color} row-start-1 row-span-2 col-start-2 col-span-1`}
+        className={`text-[3rem] font-bold ${countClass} row-start-1 row-span-2 col-start-2 col-span-1`}
       >
         {count}
       </p>
@@ -297,63 +305,87 @@ const SalesExecutiveDashboard = () => {
     }
   };
 
+  const cardResponsiveStyles =
+    "!gap-2 sm:!gap-4 !p-2 sm:!p-4 !flex sm:!grid !justify-between";
+  const countResponsiveStyles = "!text-3xl sm:!text-[3rem]";
+  const iconResponsiveStyles = "hidden sm:block";
+
+  const card2ResponsiveStyles =
+    "!gap-2 sm:!gap-4 !p-2 sm:!p-4 !flex sm:!grid !justify-between";
+  const count2ResponsiveStyles = "!text-3xl sm:!text-[3rem]";
+  const icon2ResponsiveStyles = "hidden sm:block";
+
   return (
     <div>
       <Layout>
         <div className="p-2">
           {/* total data */}
           <div>
-            <h1 className="text-2xl font-semibold tracking-wide mb-4">
+            <h1 className="text-lg sm:text-2xl font-semibold tracking-wide mb-4">
               Reporting Dashboard
             </h1>
-            <div className=" grid grid-cols-4 gap-4 mb-4">
+            <div className=" grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
               <Card
                 title="Companies Assigned"
                 count={leads.length || 0}
                 icon={<MdAssignment size={25} />}
-                color="text-gray-800"
+                divClass={cardResponsiveStyles}
+                iconClass={iconResponsiveStyles}
+                countClass={`text-gray-800 ${countResponsiveStyles}`}
                 route=""
               />
               <Card
                 title="Touched"
                 count={touchLeads.length || 0}
                 icon={<FaHandshake size={25} />}
-                color="text-blue-600"
+                divClass={cardResponsiveStyles}
+                iconClass={iconResponsiveStyles}
+                countClass={`text-blue-600 ${countResponsiveStyles}`}
                 route=""
               />
               <Card
                 title="Interacted"
                 count={totalInteractions || 0}
                 icon={<TbPhoneCall size={25} />}
-                color="text-green-600"
+                divClass={cardResponsiveStyles}
+                iconClass={iconResponsiveStyles}
+                countClass={`text-green-600 ${countResponsiveStyles}`}
                 route=""
               />
               <Card
                 title="Contact Touched New"
                 count={5}
                 icon={<FaUserPlus size={25} />}
-                color="text-teal-600"
+                divClass={cardResponsiveStyles}
+                iconClass={iconResponsiveStyles}
+                countClass={`text-teal-600 ${countResponsiveStyles}`}
                 route=""
               />
               <Card
                 title="Follow Up Taken"
                 count={12}
                 icon={<MdOutlineRefresh size={25} />}
-                color="text-yellow-600"
+                divClass={cardResponsiveStyles}
+                iconClass={iconResponsiveStyles}
+                countClass={`text-yellow-600 ${countResponsiveStyles}`}
                 route=""
               />
               <Card
                 title="Cold Mails"
                 count={mailAndLinkedInCount.totalColdMailDone || 0}
                 icon={<MdMail size={25} />}
-                color="text-cyan-600"
+                divClass={cardResponsiveStyles}
+                iconClass={iconResponsiveStyles}
+                countClass={`text-cyan-600 ${countResponsiveStyles}`}
                 route=""
               />
               <Card
                 title="LinkedIn Message"
                 count={mailAndLinkedInCount.totalLinkedInMessageDone || 0}
                 icon={<MdMessage size={25} />}
-                color="text-indigo-600"
+                divClass={cardResponsiveStyles}
+                iconClass={iconResponsiveStyles}
+                countClass={`text-indigo-600 ${countResponsiveStyles}`}
                 route=""
               />
             </div>
@@ -365,15 +397,7 @@ const SalesExecutiveDashboard = () => {
             <h1 className="text-2xl font-semibold tracking-wide mb-4">
               Today's Reporting
             </h1>
-
-            {/* <span className="call_tried">
-                Call Done:-{" "}
-                {callStatusData.callConnected +
-                  callStatusData.busy +
-                  callStatusData.switchOff +
-                  callStatusData.wrongNumber}
-              </span> */}
-            <div className="grid grid-cols-5 gap-2 mb-4">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-4">
               <Card
                 title="Total Calls"
                 count={
@@ -383,7 +407,9 @@ const SalesExecutiveDashboard = () => {
                     callStatusData.wrongNumber || 0
                 }
                 icon={<TbPhonePlus size={30} />}
-                color="text-gray-700"
+                divClass={card2ResponsiveStyles}
+                iconClass={icon2ResponsiveStyles}
+                countClass={`text-gray-700 ${count2ResponsiveStyles}`}
                 route=""
               />
 
@@ -391,7 +417,9 @@ const SalesExecutiveDashboard = () => {
                 title="Connected"
                 count={callStatusData.callConnected || 0}
                 icon={<TbPhoneDone size={30} />}
-                color="text-blue-600"
+                divClass={card2ResponsiveStyles}
+                iconClass={icon2ResponsiveStyles}
+                countClass={`text-blue-600 ${count2ResponsiveStyles}`}
                 route=""
               />
 
@@ -399,7 +427,9 @@ const SalesExecutiveDashboard = () => {
                 title="Busy"
                 count={callStatusData.busy || 0}
                 icon={<TbPhoneCalling size={30} />}
-                color="text-cyan-600"
+                divClass={card2ResponsiveStyles}
+                iconClass={icon2ResponsiveStyles}
+                countClass={`text-cyan-600 ${count2ResponsiveStyles}`}
                 route=""
               />
 
@@ -407,7 +437,9 @@ const SalesExecutiveDashboard = () => {
                 title="Switched Off"
                 count={callStatusData.switchOff || 0}
                 icon={<TbPhoneOff size={30} />}
-                color="text-pink-600"
+                divClass={card2ResponsiveStyles}
+                iconClass={icon2ResponsiveStyles}
+                countClass={`text-pink-600 ${count2ResponsiveStyles}`}
                 route=""
               />
 
@@ -415,7 +447,9 @@ const SalesExecutiveDashboard = () => {
                 title="Wrong Number"
                 count={callStatusData.wrongNumber || 0}
                 icon={<TbPhoneEnd size={30} />}
-                color="text-red-600"
+                divClass={card2ResponsiveStyles}
+                iconClass={icon2ResponsiveStyles}
+                countClass={`text-red-600 ${count2ResponsiveStyles}`}
                 route=""
               />
             </div>

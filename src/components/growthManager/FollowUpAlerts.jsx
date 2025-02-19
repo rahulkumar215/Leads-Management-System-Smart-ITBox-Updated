@@ -211,13 +211,22 @@ const FollowUpAlerts = () => {
                   S. No.
                 </th>
                 <th className="px-2 py-1 font-semibold text-sm tracking-wide">
+                  Lead Id
+                </th>
+                <th className="px-2 py-1 font-semibold text-sm tracking-wide">
                   Company
                 </th>
                 <th className="px-2 py-1 font-semibold text-sm tracking-wide">
                   Stage
                 </th>
                 <th className="px-2 py-1 font-semibold text-sm tracking-wide">
+                  Deadline
+                </th>
+                <th className="px-2 py-1 font-semibold text-sm tracking-wide">
                   Follow-Up Date
+                </th>
+                <th className="px-2 py-1 font-semibold text-sm tracking-wide">
+                  Remarks
                 </th>
                 <th className="px-2 py-1 font-semibold text-sm tracking-wide">
                   Action
@@ -227,7 +236,7 @@ const FollowUpAlerts = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={5}>
+                  <td colSpan={8}>
                     <div className="flex justify-center">
                       <DNA
                         visible={true}
@@ -242,7 +251,7 @@ const FollowUpAlerts = () => {
                 </tr>
               ) : currentPageData.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="text-center py-4">
+                  <td colSpan={8} className="text-center py-4">
                     No follow-up notifications found.
                   </td>
                 </tr>
@@ -253,10 +262,25 @@ const FollowUpAlerts = () => {
                     className="border-b border-gray-200 divide-x divide-gray-200"
                   >
                     <td className="px-2 py-1">{offset + index + 1}</td>
+                    <td className="px-2 py-1 uppercase text-green-700 font-semibold">
+                      {notification.leadId.slice(-5)}
+                    </td>
                     <td className="px-2 py-1 text-gray-800 font-semibold">
                       {notification.companyName || "Unknown Company"}
                     </td>
                     <td className="px-2 py-1">{notification.stage}</td>
+                    <td className="px-2 py-1 text-red-600">
+                      {notification.tatDeadline
+                        ? new Date(notification.tatDeadline).toLocaleDateString(
+                            "en-IN",
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            }
+                          )
+                        : "Not Set"}
+                    </td>
                     <td className="px-2 py-1">
                       {notification.followUpDate
                         ? new Date(
@@ -268,6 +292,7 @@ const FollowUpAlerts = () => {
                           })
                         : "Not Set"}
                     </td>
+                    <td className="px-2 py-1">{notification.remark}</td>
                     <td className="px-2 py-1">
                       {notification._id && (
                         <button

@@ -234,6 +234,9 @@ function InProgressStages() {
                 S. No.
               </th>
               <th className="px-2 py-1 font-semibold text-sm tracking-wide">
+                Lead Id
+              </th>
+              <th className="px-2 py-1 font-semibold text-sm tracking-wide">
                 Company
               </th>
               <th className="px-2 py-1 font-semibold text-sm tracking-wide">
@@ -291,6 +294,9 @@ function InProgressStages() {
                     className="border-b border-gray-200 divide-x divide-gray-200"
                   >
                     <td className="px-2 py-1">{offset + index + 1}</td>
+                    <td className="px-2 py-1 uppercase text-green-700 font-semibold">
+                      {stage.leadId.slice(-5)}
+                    </td>
                     <td className="px-2 py-1 text-gray-800 font-semibold">
                       {stage.companyName || "Unknown Company"}
                     </td>
@@ -318,7 +324,7 @@ function InProgressStages() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation(); // Prevent toggling row expansion
-                          navigate(`/growth-manager-leads/${stage._id}`);
+                          navigate(`/growth-manager-leads/${stage.leadId}`);
                         }}
                         className="flex cursor-pointer items-center text-red-600 px-2 py-1 rounded hover:text-red-700"
                       >
