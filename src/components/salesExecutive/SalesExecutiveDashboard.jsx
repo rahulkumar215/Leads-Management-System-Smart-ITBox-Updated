@@ -18,6 +18,7 @@ import {
   MdMessage,
   MdOutlineRefresh,
 } from "react-icons/md";
+import { toast } from "react-toastify";
 
 const Card = ({
   title,
@@ -99,52 +100,6 @@ const SalesExecutiveDashboard = () => {
     fetchLeads();
   }, [backendUrl, token]);
 
-  // Handle Date Change
-  const handleDateChange = (event) => {
-    const selected = event.target.value;
-    setSelectedDate(selected);
-
-    if (selected) {
-      const filtered = leads.filter((lead) => {
-        const assignedDate = new Date(lead.assignedDate)
-          .toISOString()
-          .split("T")[0];
-        return assignedDate === selected;
-      });
-      setFilteredLeads(filtered);
-    } else {
-      setFilteredLeads(leads);
-    }
-  };
-
-  // Handle Month and Year Change
-  const handleMonthYearChange = () => {
-    if (selectedMonth && selectedYear) {
-      const filtered = leads.filter((lead) => {
-        const assignedDate = new Date(lead.assignedDate);
-        return (
-          assignedDate.getMonth() + 1 === parseInt(selectedMonth) && // Month is 0-indexed
-          assignedDate.getFullYear() === parseInt(selectedYear)
-        );
-      });
-      setFilteredLeads(filtered);
-    }
-  };
-
-  // Handle Date Range Change
-  const handleDateRangeChange = () => {
-    if (dateRange.start && dateRange.end) {
-      const startDate = new Date(dateRange.start);
-      const endDate = new Date(dateRange.end);
-
-      const filtered = leads.filter((lead) => {
-        const assignedDate = new Date(lead.assignedDate);
-        return assignedDate >= startDate && assignedDate <= endDate;
-      });
-      setFilteredLeads(filtered);
-    }
-  };
-
   // get all contact interaction linked with sales executive
   useEffect(() => {
     const fetchInteractions = async () => {
@@ -163,7 +118,7 @@ const SalesExecutiveDashboard = () => {
     };
 
     fetchInteractions();
-  }, []);
+  }, [backendUrl, token]);
 
   // Total Touched Leads
   useEffect(() => {
@@ -184,7 +139,7 @@ const SalesExecutiveDashboard = () => {
       }
     };
     getTouchLeads();
-  }, []);
+  }, [backendUrl, token]);
 
   // total counts of mail and linkedin
   useEffect(() => {
@@ -208,7 +163,7 @@ const SalesExecutiveDashboard = () => {
       }
     };
     getMailAndLinkedInCount();
-  }, []);
+  }, [backendUrl, token]);
 
   // get call data accroding to today
   useEffect(() => {
@@ -229,82 +184,55 @@ const SalesExecutiveDashboard = () => {
       }
     };
     todayCallStatus();
-  }, []);
-
-  const fetchTATAlerts = async () => {
-    try {
-      const response = await axios.get(
-        `${backendUrl}/api/lead/sales-executive/getTATAlerts`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      setTatAlerts(response.data.tatAlerts);
-      setFollowUpAlerts(response.data.followUpAlerts);
-      console.log("Tat Alerts", response.data);
-      console.log("FollowUp Alerts", response.data);
-    } catch (error) {
-      console.error(
-        "❌ Error fetching TAT alerts:",
-        error.response?.data || error.message
-      );
-    }
-  };
+  }, [backendUrl, token]);
 
   useEffect(() => {
+    const fetchTATAlerts = async () => {
+      try {
+        const response = await axios.get(
+          `${backendUrl}/api/lead/sales-executive/getTATAlerts`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        setTatAlerts(response.data.tatAlerts);
+        setFollowUpAlerts(response.data.followUpAlerts);
+        console.log("Tat Alerts", response.data);
+        console.log("FollowUp Alerts", response.data);
+      } catch (error) {
+        console.error(
+          "❌ Error fetching TAT alerts:",
+          error.response?.data || error.message
+        );
+      }
+    };
     fetchTATAlerts();
-  }, []);
+  }, [backendUrl, token]);
 
   useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        console.log("📡 Fetching Sales Executive Notifications...");
+        const response = await axios.get(
+          `${backendUrl}/api/lead/sales-executive-notifications`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setNotifications(response.data.notifications);
+        console.log(
+          "Sales Executive Notifications:",
+          response.data.notifications
+        );
+      } catch (error) {
+        console.error("❌ Error fetching notifications:", error);
+      }
+    };
     fetchNotifications();
-  }, []);
+  }, [backendUrl, token]);
 
-  const fetchNotifications = async () => {
-    try {
-      console.log("📡 Fetching Sales Executive Notifications...");
-      const response = await axios.get(
-        `${backendUrl}/api/lead/sales-executive-notifications`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setNotifications(response.data.notifications);
-      console.log(
-        "Sales Executive Notifications:",
-        response.data.notifications
-      );
-    } catch (error) {
-      console.error("❌ Error fetching notifications:", error);
-    }
-  };
-
-  const closeNotification = async (leadId, notification) => {
-    if (!leadId || leadId === "undefined") {
-      console.error("❌ leadId is undefined when trying to close notification");
-      return;
-    }
-
-    console.log("✅ Closing notification for Lead ID:", leadId);
-
-    try {
-      await axios.put(
-        `${backendUrl}/api/lead/sales-executive/notifications/${leadId}`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      // ✅ Remove closed notification from the UI
-      setNotifications(
-        notifications.filter((notif) => notif.leadId !== leadId)
-      );
-    } catch (error) {
-      console.error("❌ Error marking notification as read:", error);
-    }
-  };
-
+  // Responsive Styles for Cards
   const cardResponsiveStyles =
     "!gap-2 sm:!gap-4 !p-2 sm:!p-4 !flex sm:!grid !justify-between";
   const countResponsiveStyles = "!text-3xl sm:!text-[3rem]";
@@ -352,7 +280,7 @@ const SalesExecutiveDashboard = () => {
                 countClass={`text-green-600 ${countResponsiveStyles}`}
                 route=""
               />
-              <Card
+              {/* <Card
                 title="Contact Touched New"
                 count={5}
                 icon={<FaUserPlus size={25} />}
@@ -360,8 +288,8 @@ const SalesExecutiveDashboard = () => {
                 iconClass={iconResponsiveStyles}
                 countClass={`text-teal-600 ${countResponsiveStyles}`}
                 route=""
-              />
-              <Card
+              /> */}
+              {/* <Card
                 title="Follow Up Taken"
                 count={12}
                 icon={<MdOutlineRefresh size={25} />}
@@ -369,7 +297,7 @@ const SalesExecutiveDashboard = () => {
                 iconClass={iconResponsiveStyles}
                 countClass={`text-yellow-600 ${countResponsiveStyles}`}
                 route=""
-              />
+              /> */}
               <Card
                 title="Cold Mails"
                 count={mailAndLinkedInCount.totalColdMailDone || 0}
@@ -419,7 +347,7 @@ const SalesExecutiveDashboard = () => {
                 icon={<TbPhoneDone size={30} />}
                 divClass={card2ResponsiveStyles}
                 iconClass={icon2ResponsiveStyles}
-                countClass={`text-blue-600 ${count2ResponsiveStyles}`}
+                countClass={`text-green-600 ${count2ResponsiveStyles}`}
                 route=""
               />
 

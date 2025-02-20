@@ -231,7 +231,7 @@ const LeadList = () => {
                     {expandedRows.includes(lead._id) && (
                       <tr className="bg-gray-50">
                         <td
-                          colSpan="8"
+                          colSpan="9"
                           className="px-4 py-2 text-sm text-gray-700"
                         >
                           {lead.contactPoints.length > 0 ? (

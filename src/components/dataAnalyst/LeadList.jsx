@@ -76,7 +76,7 @@ const LeadList = () => {
           Leads List <span className="text-sm">({leads.length})</span>{" "}
         </h3>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row items-center gap-4 justify-between mb-4">
           <input
             type="text"
             placeholder="Search by anything..."
@@ -85,7 +85,7 @@ const LeadList = () => {
             className="px-2 py-1 border border-gray-300 bg-gray-100 rounded-md shadow-sm w-full sm:w-1/3 focus:outline-none focus:ring-2 focus:ring-slate-500"
           />
           <button
-            className="px-4 py-2 flex items-center gap-2 bg-red-600 text-white w-full sm:w-fit cursor-pointer rounded-md hover:bg-red-700 focus:outline-none"
+            className="px-4 py-2 flex justify-center  items-center gap-2 bg-red-600 text-white w-full sm:w-fit cursor-pointer rounded-md hover:bg-red-700 focus:outline-none"
             onClick={() => navigate("/create-lead")}
           >
             <FiPlus size={20} />

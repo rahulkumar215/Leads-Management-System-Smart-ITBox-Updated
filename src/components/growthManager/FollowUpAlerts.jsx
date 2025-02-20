@@ -20,6 +20,7 @@ const FollowUpAlerts = () => {
   const [filterStage, setFilterStage] = useState("");
   const [filterFollowUpFrom, setFilterFollowUpFrom] = useState("");
   const [filterFollowUpTo, setFilterFollowUpTo] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(0);
@@ -92,6 +93,16 @@ const FollowUpAlerts = () => {
         const toDate = new Date(filterFollowUpTo);
         if (followUpDate > toDate) return false;
       }
+      if (searchTerm) {
+        const search = searchTerm.toLowerCase();
+        const matches = Object.values(notification).some((val) => {
+          return typeof val === "string" && val.toLowerCase().includes(search);
+        });
+
+        if (!matches) {
+          return false;
+        }
+      }
       return true;
     });
   }, [
@@ -100,6 +111,7 @@ const FollowUpAlerts = () => {
     filterStage,
     filterFollowUpFrom,
     filterFollowUpTo,
+    searchTerm,
   ]);
 
   // Pagination calculations
@@ -120,7 +132,26 @@ const FollowUpAlerts = () => {
         <h3 className="text-xl font-semibold mb-4">📌 Follow-Up Reminders</h3>
 
         {/* Filters Section */}
-        <div className="filters grid grid-cols-1 sm:grid-cols-4 gap-4 mb-4">
+        <div className="filters grid grid-cols-1 sm:grid-cols-5 gap-2 mb-4">
+          <div className="flex flex-col w-full col-start-1 col-span-2 sm:col-span-1 order-1 sm:order-[0]">
+            <label
+              htmlFor="searchbar"
+              className="text-sm sm:mb-1 hidden sm:block"
+            >
+              &nbsp;
+            </label>
+            <input
+              type="text"
+              placeholder="Search by anything..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(0);
+              }}
+              id="searchbar"
+              className="px-2 py-1 border border-gray-300 rounded-md shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-slate-500"
+            />
+          </div>
           {/* Company Filter */}
           <div className="flex flex-col">
             <label htmlFor="companyFilter" className="mb-1 text-sm">

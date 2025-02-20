@@ -19,6 +19,20 @@ const LeadDetails = () => {
   const token = localStorage.getItem("token");
 
   const [lead, setLead] = useState(null);
+  // Find the stage with revenue (adjust the stage name as needed)
+  const solutionDeckStage = lead?.growthManagerPipeline?.find(
+    (stage) => stage.stage === "Solution Deck Creation"
+  );
+
+  // Calculate the total revenue from the products in that stage
+  const totalRevenue =
+    solutionDeckStage?.products?.reduce(
+      (acc, item) => acc + (item.totalAmount || 0),
+      0
+    ) || 0;
+
+  console.log(totalRevenue); 
+
   const [selectedStage, setSelectedStage] = useState(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
@@ -111,6 +125,16 @@ const LeadDetails = () => {
                 {lead.createdBy || "N/A"}
               </span>
             </div>
+            {totalRevenue > 0 && (
+              <div className="mt-1">
+                <span className="text-md text-gray-700 font-semibold mr-2 underline underline-offset-4">
+                  Total Revenue:
+                </span>
+                <span className="text-md font-semibold px-2 rounded-md border border-red-300 bg-red-100 text-red-600">
+                  {totalRevenue || "0"}
+                </span>
+              </div>
+            )}
             {lead.isCompanyLost && (
               <p className="bg-red-700 text-lg mt-4 text-white px-2 py-1 rounded-md text-left">
                 Lost Reason: {lead.companyLostReason}

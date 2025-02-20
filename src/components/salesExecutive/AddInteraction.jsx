@@ -94,6 +94,7 @@ export const AddInteractionForm = ({
       setFollowUpTime("");
       setRemark("");
       setGrowthManagerId("");
+      closeModal();
     } catch (error) {
       console.error("Error adding interaction:", error);
       toast.error("Failed to add interaction");

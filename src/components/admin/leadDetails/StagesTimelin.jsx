@@ -28,7 +28,9 @@ const StagesTimeline = ({ lead, openModal }) => {
 
   // Create a unified list: if lead.growthManagerPipeline contains data for a stage, use it; otherwise, mark as not completed.
   const stages = masterStages.map((name) => {
-    const stageData = lead.growthManagerPipeline.find((s) => s.stage === name);
+    const stageData = lead?.growthManagerPipeline?.find(
+      (s) => s.stage === name
+    );
     return stageData
       ? stageData
       : { stage: name, completed: false, tatDeadline: null };
@@ -68,7 +70,7 @@ const StagesTimeline = ({ lead, openModal }) => {
       <motion.div
         initial={{ height: 0 }}
         animate={{ height: targetLineHeight }}
-        transition={{ duration: 2, ease: "easeInOut" }}
+        transition={{ duration: 3.5, ease: "easeInOut" }}
         style={{
           position: "absolute",
           left: 28, // adjust so the line is behind the icons

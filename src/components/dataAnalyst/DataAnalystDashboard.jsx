@@ -112,7 +112,7 @@ const DataAnalystDashboard = () => {
 
   return (
     <Layout>
-      <div className="p-2 grid grid-cols-3 w-2/3 gap-4">
+      <div className="p-2 grid sm:grid-cols-3 sm:w-2/3 gap-4">
         <Card
           title="Total Leads"
           count={leads.length || 0}

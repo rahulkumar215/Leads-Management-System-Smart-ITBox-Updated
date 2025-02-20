@@ -21,6 +21,7 @@ const DeadLineStages = () => {
   const [filterStage, setFilterStage] = useState("");
   const [filterDeadlineFrom, setFilterDeadlineFrom] = useState("");
   const [filterDeadlineTo, setFilterDeadlineTo] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(0);
@@ -102,6 +103,18 @@ const DeadLineStages = () => {
         const toDate = new Date(filterDeadlineTo);
         if (deadlineDate > toDate) return false;
       }
+
+      if (searchTerm) {
+        const search = searchTerm.toLowerCase();
+        const matches = Object.values(stage).some((val) => {
+          return typeof val === "string" && val.toLowerCase().includes(search);
+        });
+
+        if (!matches) {
+          return false;
+        }
+      }
+
       return true;
     });
   }, [
@@ -110,6 +123,7 @@ const DeadLineStages = () => {
     filterStage,
     filterDeadlineFrom,
     filterDeadlineTo,
+    searchTerm,
   ]);
 
   // Pagination calculations
@@ -129,7 +143,26 @@ const DeadLineStages = () => {
           Today's Deadline Stages
         </h4>
         {/* Filters Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-4">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 items-center mb-4">
+          <div className="flex flex-col w-full col-start-1 col-span-2 sm:col-span-1 order-1 sm:order-[0]">
+            <label
+              htmlFor="searchbar"
+              className="text-sm sm:mb-1 hidden sm:block"
+            >
+              &nbsp;
+            </label>
+            <input
+              type="text"
+              placeholder="Search by anything..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(0);
+              }}
+              id="searchbar"
+              className="px-2 py-1 border border-gray-300 rounded-md shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-slate-500"
+            />
+          </div>
           {/* Company Filter */}
           <div className="flex flex-col">
             <label htmlFor="companyFilter" className="mb-1 text-sm">
@@ -241,7 +274,7 @@ const DeadLineStages = () => {
             <tbody className="bg-white">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="text-center">
+                  <td colSpan={7} className="text-center">
                     <div className="flex justify-center">
                       <DNA
                         visible={true}
@@ -256,7 +289,7 @@ const DeadLineStages = () => {
                 </tr>
               ) : currentPageData.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-4">
+                  <td colSpan={7} className="text-center py-2">
                     No deadline stages found.
                   </td>
                 </tr>

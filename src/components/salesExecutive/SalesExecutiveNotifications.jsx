@@ -144,7 +144,7 @@ function SalesExecutiveNotifications() {
         <h4 className="text-xl font-semibold mb-4">🔔 Notifications</h4>
 
         {/* Filters */}
-        <div className="grid grid-cols-2 sm:grid-cols-[2fr_repeat(2,_1fr)_min-content] gap-2 sm:gap-4 items-center mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-[2fr_repeat(2,_1fr)_min-content] gap-2 sm:gap-4 items-center mb-4">
           <div className="flex flex-col w-full col-start-1 col-span-2 sm:col-span-1 order-1 sm:order-[0]">
             <label
               htmlFor="searchbar"
@@ -172,7 +172,7 @@ function SalesExecutiveNotifications() {
                 setFilterCompany(e.target.value);
                 setCurrentPage(0);
               }}
-              className="px-2 py-1 border border-gray-300 rounded-md"
+              className="px-2 py-1 w-full border border-gray-300 rounded-md"
             >
               <option value="">All Companies</option>
               {uniqueCompanies.map((company) => (
@@ -251,7 +251,7 @@ function SalesExecutiveNotifications() {
                 </tr>
               ) : currentPageData.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="text-center">
+                  <td colSpan="7" className="text-center p-2">
                     No notifications found.
                   </td>
                 </tr>

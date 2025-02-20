@@ -52,10 +52,10 @@ const EditLead = () => {
       setIsLoading(true);
       try {
         const response = await axios.get(
-          `${backendUrl}/api/lead/single-lead/${leadId}`,
+          backendUrl + `/api/lead/single-lead/${leadId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        const leadData = response.data.singleLead;
+        const leadData = response?.data?.lead;
         setCompanyName(leadData.companyName);
         setIndustry(leadData.industry);
         setSalesExecutive(

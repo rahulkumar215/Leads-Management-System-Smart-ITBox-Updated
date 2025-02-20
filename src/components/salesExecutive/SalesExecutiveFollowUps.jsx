@@ -111,12 +111,7 @@ function SalesExecutiveFollowUps() {
   return (
     <Layout>
       <div className="p-2">
-        <h5
-          className="text-xl font-semibold mb-4"
-          style={{ marginTop: "20px", marginBottom: "15px" }}
-        >
-          📅 Today's Follow-Ups
-        </h5>
+        <h5 className="text-xl font-semibold mb-4">📅 Today's Follow-Ups</h5>
 
         {/* Filters */}
         <div className="grid grid-cols-2 sm:grid-cols-[2fr_repeat(2,_1fr)] gap-2 sm:gap-4 items-center mb-4">

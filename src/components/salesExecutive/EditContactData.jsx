@@ -98,7 +98,7 @@ const EditContactData = () => {
   return (
     <Layout>
       <div className="container mx-auto p-2">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-4">
           <h3 className="text-2xl font-semibold">Lead Interactions</h3>
           <button
             onClick={() => setIsModalOpen(true)}

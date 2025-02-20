@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import axios from "axios";
 import { BiSolidErrorAlt } from "react-icons/bi";
+import { DNA } from "react-loader-spinner";
 function parseMessage(message) {
   const elements = [];
   let remainingText = message;
@@ -122,6 +123,7 @@ const mapRole = (role) => {
 function GrowthManagerNotifications() {
   const { backendUrl } = useContext(ThemeContext);
   const token = localStorage.getItem("token");
+  const [isLoading, setIsLoading] = useState(false);
 
   const [alerts, setAlerts] = useState([]);
 
@@ -130,6 +132,8 @@ function GrowthManagerNotifications() {
   }, [backendUrl]);
 
   const fetchAlertsAndStages = async () => {
+    setIsLoading(true);
+
     try {
       if (!token) {
         console.error("❌ No auth token found!");
@@ -150,6 +154,8 @@ function GrowthManagerNotifications() {
       console.log("🔹 Alerts:", alertResponse.data);
     } catch (error) {
       console.error("❌ Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -172,7 +178,22 @@ function GrowthManagerNotifications() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {alerts && alerts.length > 0 ? (
+            {isLoading ? (
+              <tr>
+                <td colSpan={8}>
+                  <div className="flex justify-center">
+                    <DNA
+                      visible={true}
+                      height="40"
+                      width="40"
+                      ariaLabel="dna-loading"
+                      wrapperStyle={{}}
+                      wrapperClass="dna-wrapper"
+                    />
+                  </div>
+                </td>
+              </tr>
+            ) : alerts && alerts.length > 0 ? (
               alerts.map((alert, index) => (
                 <tr
                   key={index}

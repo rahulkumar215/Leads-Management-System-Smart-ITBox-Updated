@@ -5,12 +5,14 @@ import sideImage from "../../assets/hero-shape-11.png";
 import logo from "../../assets/logo.jpeg";
 import { toast } from "react-toastify";
 import { ThemeContext } from "../../context/ThemeContext";
+import { Bars } from "react-loader-spinner";
 
 const SignIn = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const { backendUrl } = useContext(ThemeContext);
 
@@ -22,7 +24,7 @@ const SignIn = () => {
       login: email, // or whatever field matches the login field
       pswd: password,
     };
-
+    setIsLoading(true);
     try {
       const response = await fetch(backendUrl + "/api/users/login", {
         method: "POST",
@@ -75,17 +77,40 @@ const SignIn = () => {
       }
     } catch (error) {
       setError("An error occurred. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex">
+      {isLoading && (
+        <div className="absolute inset-0 flex justify-center h-full items-center bg-white/30 z-10">
+          <Bars
+            height="40"
+            width="40"
+            color="#B43F3F"
+            ariaLabel="bars-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+            visible={true}
+          />
+        </div>
+      )}
       {/* Left Section */}
       <div className="hidden md:flex md:w-1/2 h-screen relative items-center justify-center bg-gradient-to-br from-[#FF9E4F] to-[#FF8E31] overflow-hidden">
         <div className="text-center px-8">
-          <h3 className="text-4xl font-bold text-white mb-4">Welcome Back!</h3>
-          <p className="text-lg text-white">
-            Log in to continue your journey with us.
+          <h3
+            className="text-[4rem] font-bold text-white mb-4"
+            style={{ fontFamily: "Borel, serif" }}
+          >
+            Welcome Back!
+          </h3>
+          <p
+            className="text-xl text-white"
+            style={{ fontFamily: "Open Sans, serif" }}
+          >
+            Log in to continue.
           </p>
         </div>
         {/* Optional decorative image */}
@@ -99,9 +124,9 @@ const SignIn = () => {
       </div>
 
       {/* Right Section */}
-      <div className="w-full md:w-1/2 h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-        <div className="w-full max-w-md bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg transform transition duration-500 hover:shadow-2xl">
-          <img src={logo} alt="Logo" className="w-24 mb-4 mx-auto" />
+      <div className="w-full md:w-1/2 h-screen flex items-center justify-center  dark:bg-gray-900">
+        <div className="w-full max-w-md bg-white dark:bg-gray-800 p-8 rounded-lg transform transition duration-500 ">
+          <img src={logo} alt="Logo" className="w-48 mb-4 mx-auto" />
           <h4 className="text-2xl font-bold text-gray-800 dark:text-indigo-300 mb-6 text-center">
             Sign In
           </h4>
@@ -145,9 +170,21 @@ const SignIn = () => {
             <div className="mb-6">
               <button
                 type="submit"
-                className="w-full bg-slate-600 cursor-pointer dark:bg-gray-700 text-white py-2 rounded-md hover:bg-slate-700 dark:hover:bg-indigo-800 transition duration-300"
+                className="w-full bg-slate-600 cursor-pointer dark:bg-gray-700 text-white py-2 rounded-md hover:bg-slate-700 dark:hover:bg-indigo-800 flex items-center justify-center transition duration-300"
               >
-                Sign In
+                {isLoading ? (
+                  <Bars
+                    height="20"
+                    width="20"
+                    color="#ffffff"
+                    ariaLabel="bars-loading"
+                    wrapperStyle={{}}
+                    wrapperClass=""
+                    visible={true}
+                  />
+                ) : (
+                  "Sign In"
+                )}
               </button>
             </div>
           </form>

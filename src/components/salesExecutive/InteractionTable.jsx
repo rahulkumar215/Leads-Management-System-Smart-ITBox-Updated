@@ -62,7 +62,7 @@ export const InteractionsTable = ({ interactions }) => {
 
   return (
     <div className="">
-      <h3 className="text-xl font-semibold text-gray-600">
+      <h3 className="text-xl font-semibold text-gray-600 mb-2">
         Interactions Record
       </h3>
       <div className="grid grid-cols-2 sm:grid-cols-[2fr_repeat(4,_1fr)] gap-2 sm:gap-4 items-center mb-4">

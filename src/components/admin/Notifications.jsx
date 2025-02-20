@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
+import { DNA } from "react-loader-spinner";
 
 function parseMessage(message) {
   const elements = [];
@@ -121,6 +122,7 @@ const mapRole = (role) => {
 
 function Notifications() {
   const [adminAlerts, setAdminAlerts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { backendUrl } = useContext(ThemeContext);
   const token = localStorage.getItem("token");
@@ -128,6 +130,7 @@ function Notifications() {
   // Fetch TAT Alerts (Admin)
   useEffect(() => {
     const fetchAdminAlerts = async () => {
+      setIsLoading(true);
       try {
         const response = await axios.get(
           `${backendUrl}/api/admin/all-tat-alerts`,
@@ -136,6 +139,8 @@ function Notifications() {
         setAdminAlerts(response.data.alerts);
       } catch (error) {
         console.error("Error fetching Admin TAT Alerts:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchAdminAlerts();
@@ -160,7 +165,22 @@ function Notifications() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {adminAlerts && adminAlerts.length > 0 ? (
+            {isLoading ? (
+              <tr>
+                <td colSpan={8}>
+                  <div className="flex justify-center">
+                    <DNA
+                      visible={true}
+                      height="40"
+                      width="40"
+                      ariaLabel="dna-loading"
+                      wrapperStyle={{}}
+                      wrapperClass="dna-wrapper"
+                    />
+                  </div>
+                </td>
+              </tr>
+            ) : adminAlerts && adminAlerts.length > 0 ? (
               adminAlerts.map((alert, index) => (
                 <tr
                   key={index}

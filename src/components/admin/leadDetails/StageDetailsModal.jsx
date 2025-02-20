@@ -48,10 +48,19 @@ export const StageDetailsModal = ({
               {selectedStage.completed ? "Completed" : "Pending"}
             </span>
           </div>
-          <p className="mb-1">
+          <p className="mb-1 ">
             <strong>Deadline:</strong>{" "}
             {selectedStage.tatDeadline &&
               new Date(selectedStage.tatDeadline).toLocaleDateString("en-IN", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })}
+          </p>
+          <p className="mb-1 ">
+            <strong>Completed Date:</strong>{" "}
+            {selectedStage.callDate &&
+              new Date(selectedStage.callDate).toLocaleDateString("en-IN", {
                 day: "2-digit",
                 month: "short",
                 year: "numeric",
