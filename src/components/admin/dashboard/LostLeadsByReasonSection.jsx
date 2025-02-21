@@ -64,7 +64,7 @@ const LostLeadsByReasonSection = ({
                   icon={icon}
                   color={color}
                   textColor={textColor}
-                  route="/lost-leads"
+                  route="/admin/all-leads"
                 />
               );
             })

@@ -27,7 +27,7 @@ const Alerts = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 10;
+  const itemsPerPage = 30;
 
   useEffect(() => {
     fetchWrongNumberAlerts();
@@ -245,7 +245,7 @@ const Alerts = () => {
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto shadow-md rounded-lg border border-gray-300">
+        <div className="overflow-x-auto shadow-md rounded-lg border border-gray-300 max-h-[30rem]">
           <table className="min-w-full table-auto border-collapse">
             <thead className="bg-gray-800 text-white">
               <tr>
@@ -284,7 +284,7 @@ const Alerts = () => {
             <tbody className="bg-white">
               {alertsLoading ? (
                 <tr>
-                  <td colSpan={8}>
+                  <td colSpan={9}>
                     <div className="flex justify-center">
                       <DNA
                         visible={true}
@@ -299,7 +299,7 @@ const Alerts = () => {
                 </tr>
               ) : currentPageData.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="text-center py-4">
+                  <td colSpan="9" className="text-center py-4">
                     No wrong number alerts found.
                   </td>
                 </tr>

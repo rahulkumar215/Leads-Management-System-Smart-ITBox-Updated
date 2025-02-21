@@ -17,7 +17,7 @@ const AllLeads = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 10;
+  const itemsPerPage = 30;
 
   useEffect(() => {
     fetchLeads();
@@ -120,12 +120,13 @@ const AllLeads = () => {
         </div>
 
         <div
-          className="overflow-x-auto shadow-md rounded-lg border border-gray-300"
+          className="overflow-x-auto shadow-md rounded-lg border border-gray-300 max-h-[30rem]"
           style={{ scrollbarWidth: "thin" }}
         >
           <table className="min-w-full table-auto border-collapse">
             <thead className="bg-[#173B45] text-[#F8EDED] sticky top-0 z-10">
               <tr>
+                <th className="py-2 text-sm  font-semibold">S. No.</th>
                 <th className="py-2 text-sm min-w-16 font-semibold">Lead Id</th>
                 <th className="px-2 py-2 text-sm text-left font-semibold hidden md:table-cell">
                   Created At
@@ -153,7 +154,7 @@ const AllLeads = () => {
             <tbody className="bg-white">
               {leadsLoading ? (
                 <tr>
-                  <td colSpan="8">
+                  <td colSpan="9">
                     <div className="flex justify-center">
                       <DNA
                         visible={true}
@@ -167,12 +168,15 @@ const AllLeads = () => {
                   </td>
                 </tr>
               ) : currentPageData.length > 0 ? (
-                currentPageData.map((lead) => (
+                currentPageData.map((lead, i) => (
                   <React.Fragment key={lead._id}>
                     <tr
                       onClick={() => toggleRowExpansion(lead._id)}
                       className="border-b divide-x divide-gray-200 border-gray-200 text-sm hover:bg-gray-50 cursor-pointer"
                     >
+                      <td className="px-2 py-1 text-center">
+                        {offset + i + 1}
+                      </td>
                       <td className="px-2 py-1 text-center uppercase text-gray-800 font-semibold">
                         {lead._id.slice(-5)}
                       </td>

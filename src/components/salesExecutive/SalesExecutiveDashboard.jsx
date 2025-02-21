@@ -19,6 +19,7 @@ import {
   MdOutlineRefresh,
 } from "react-icons/md";
 import { toast } from "react-toastify";
+import { SiGoogleanalytics } from "react-icons/si";
 
 const Card = ({
   title,
@@ -249,9 +250,11 @@ const SalesExecutiveDashboard = () => {
         <div className="p-2">
           {/* total data */}
           <div>
-            <h1 className="text-lg sm:text-2xl font-semibold tracking-wide mb-4">
-              Reporting Dashboard
-            </h1>
+            <h2 className="font-semibold text-2xl grid grid-cols-[min-content_max-content_1fr] grid-rows-1 gap-2 items-center">
+              <SiGoogleanalytics />
+              Executive Dashboard
+              <div className=" h-[1px] w-[90%] justify-self-center border-t border-black"></div>
+            </h2>
             <div className=" grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
               <Card
                 title="Companies Assigned"

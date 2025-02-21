@@ -5,7 +5,16 @@ import axios from "axios";
 import { DNA } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
 import { MdDashboard, MdDrafts } from "react-icons/md";
-import { FaBell } from "react-icons/fa";
+import { FaBell, FaChartPie } from "react-icons/fa";
+import {
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
+import { GrOverview } from "react-icons/gr";
 
 const Card = ({
   title,
@@ -18,7 +27,7 @@ const Card = ({
   const navigate = useNavigate();
   return (
     <div
-      className={`grid grid-cols-[1fr_min-content] gap-4 bg-white grid-rows-2 items-center border border-gray-100 p-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer ${classes}`}
+      className={`grid grid-cols-[1fr_min-content] gap-4 bg-white grid-rows-2 items-center border border-gray-100 p-2 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer ${classes}`}
       onClick={() => navigate(route)}
     >
       <h3 className="text-lg font-semibold col-start-1 col-span-1 text-gray-600">
@@ -40,20 +49,33 @@ const DataAnalystDashboard = () => {
   const token = localStorage.getItem("token");
 
   // State declarations
-  const [wrongNumberAlerts, setWrongNumberAlerts] = useState([]);
+  // const [wrongNumberAlerts, setWrongNumberAlerts] = useState([]);
   const [leads, setLeads] = useState([]);
 
   const draftLeads = leads.filter((lead) => lead.isDraft === true).length;
+  const wonLeads = leads.filter((lead) => lead.status === "win").length;
+  const lostLeads = leads.filter((lead) => lead.status === "lost").length;
+  const closedLeads = leads.filter((lead) => lead.status === "closed").length;
+  const openLeads = leads.filter((lead) => lead.status === "open").length;
+
+  // Build the data array
+  const data = [
+    { name: "Open", value: openLeads },
+    { name: "Draft", value: draftLeads },
+    { name: "Won", value: wonLeads },
+    { name: "Lost", value: lostLeads },
+    { name: "Closed", value: closedLeads },
+  ];
 
   const [loading, setLoading] = useState({
-    alerts: true,
+    // alerts: true,
     leads: true,
   });
 
   const isDataLoading = Object.values(loading).some((val) => val);
 
   useEffect(() => {
-    fetchWrongNumberAlerts();
+    // fetchWrongNumberAlerts();
     fetchLeads();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -76,21 +98,57 @@ const DataAnalystDashboard = () => {
     }
   };
 
-  const fetchWrongNumberAlerts = async () => {
-    try {
-      console.log("📡 Fetching Wrong Number Alerts...");
-      console.log("🔑 Token being sent:", token);
-      const response = await axios.get(
-        `${backendUrl}/api/lead/wrong-number-alerts`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      console.log("Wrong number alerts", response.data);
-      setWrongNumberAlerts(response.data.wrongNumberAlerts);
-    } catch (error) {
-      console.error("❌ Error fetching Wrong Number Alerts:", error);
-    } finally {
-      setLoading((prev) => ({ ...prev, alerts: false }));
-    }
+  // const fetchWrongNumberAlerts = async () => {
+  //   try {
+  //     console.log("📡 Fetching Wrong Number Alerts...");
+  //     console.log("🔑 Token being sent:", token);
+  //     const response = await axios.get(
+  //       `${backendUrl}/api/lead/wrong-number-alerts`,
+  //       { headers: { Authorization: `Bearer ${token}` } }
+  //     );
+  //     console.log("Wrong number alerts", response.data);
+  //     setWrongNumberAlerts(response.data.wrongNumberAlerts);
+  //   } catch (error) {
+  //     console.error("❌ Error fetching Wrong Number Alerts:", error);
+  //   } finally {
+  //     setLoading((prev) => ({ ...prev, alerts: false }));
+  //   }
+  // };
+
+  // Custom label renderer to display percentages on each slice with white text
+  const renderCustomizedLabel = ({
+    cx,
+    cy,
+    midAngle,
+    innerRadius,
+    outerRadius,
+    percent,
+  }) => {
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="white"
+        textAnchor={x > cx ? "start" : "end"}
+        dominantBaseline="central"
+      >
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    );
+  };
+
+  // Define colors for each lead category using HEX values
+  const COLORS = {
+    Open: "#2563eb", // text-blue-600
+    Draft: "#4b5563", // text-gray-600
+    Won: "#16a34a", // text-green-600
+    Lost: "#dc2626", // text-red-600
+    Closed: "#ea580c", // text-red-600
   };
 
   if (isDataLoading) {
@@ -112,21 +170,85 @@ const DataAnalystDashboard = () => {
 
   return (
     <Layout>
-      <div className="p-2 grid sm:grid-cols-3 sm:w-2/3 gap-4">
-        <Card
-          title="Total Leads"
-          count={leads.length || 0}
-          icon={<MdDashboard size={30} />}
-          color="text-blue-600"
-          route="/analyst-lead"
-        />
-        <Card
-          title="Draft"
-          count={draftLeads || 0}
-          icon={<MdDrafts size={30} />}
-          color="text-yellow-600"
-          route="/analyst-lead"
-        />
+      <div className=" grid sm:grid-cols-2 gap-4">
+        <div>
+          <h2 className="text-lg p-2 font-semibold grid grid-cols-[min-content_max-content] items-center gap-2">
+            <GrOverview />
+            Leads Overview
+          </h2>
+          <div className="p-2 grid grid-cols-2 sm:grid-cols-2 gap-2">
+            <Card
+              title="Total"
+              count={leads.length || 0}
+              icon={<MdDashboard size={25} />}
+              color="text-gray-600"
+              route="/analyst-lead"
+            />
+            <Card
+              title="Open"
+              count={openLeads || 0}
+              icon={<MdDashboard size={25} />}
+              color="text-blue-600"
+              route="/analyst-lead"
+            />
+            <Card
+              title="Draft"
+              count={draftLeads || 0}
+              icon={<MdDrafts size={25} />}
+              color="text-gray-600"
+              route="/analyst-lead"
+            />
+            <Card
+              title="Won"
+              count={wonLeads || 0}
+              icon={<MdDrafts size={25} />}
+              color="text-green-600"
+              route="/analyst-lead"
+            />
+            <Card
+              title="Lost"
+              count={lostLeads || 0}
+              icon={<MdDrafts size={25} />}
+              color="text-red-600"
+              route="/analyst-lead"
+            />
+            <Card
+              title="Closed"
+              count={closedLeads || 0}
+              icon={<MdDrafts size={25} />}
+              color="text-orange-600"
+              route="/analyst-lead"
+            />
+          </div>
+        </div>
+        <div className=" shadow-md rounded-md">
+          <h2 className="text-lg p-2 font-semibold grid grid-cols-[min-content_max-content] items-center gap-2">
+            <FaChartPie />
+            Leads Overview (%)
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={data}
+                cx="50%"
+                cy="50%"
+                outerRadius={80}
+                dataKey="value"
+                labelLine={false}
+                label={renderCustomizedLabel}
+                fill="#8884d8"
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[entry.name]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+      {/* <div className="p-2 grid sm:grid-cols-6 gap-2">
         <Card
           title="Alerts"
           count={wrongNumberAlerts.length || 0}
@@ -134,7 +256,7 @@ const DataAnalystDashboard = () => {
           color="text-red-600"
           route="/analyst-alerts"
         />
-      </div>
+      </div> */}
     </Layout>
   );
 };

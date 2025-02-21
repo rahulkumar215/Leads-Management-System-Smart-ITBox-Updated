@@ -147,7 +147,7 @@ function Notifications() {
   }, [backendUrl, token]);
 
   return (
-    <div className="col-start-2 col-span-1">
+    <div className="col-start-2 col-span-1 p-2">
       <h3 className="text-xl tracking-wide font-semibold mb-2">TAT Alerts</h3>
       <div className="overflow-x-auto rounded-lg shadow-xl border border-gray-500">
         <table className="min-w-full border-collapse">

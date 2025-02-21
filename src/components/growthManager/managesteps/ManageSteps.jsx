@@ -207,7 +207,9 @@ const ManageSteps = () => {
                 </span>{" "}
                 <span
                   className={`text-2xl font-semibold uppercase tracking-wide px-2 py-1 text-white rounded-md ${
-                    lead.status === "open" ? "bg-green-700" : "bg-red-700"
+                    lead.status === "open" || lead.status === "win"
+                      ? "bg-green-700"
+                      : "bg-red-700"
                   }`}
                 >
                   {lead._id?.slice(-5)}
@@ -221,7 +223,7 @@ const ManageSteps = () => {
                   {lead.companyName || "Unknown"}
                 </span>
               </div>
-              <div>
+              {/* <div>
                 <span className="text-md text-gray-700 font-semibold mr-2">
                   Sales Executive:
                 </span>
@@ -236,7 +238,7 @@ const ManageSteps = () => {
                 <span className="text-md font-semibold ">
                   {lead.createdBy || "N/A"}
                 </span>
-              </div>
+              </div> */}
               {totalRevenue > 0 && (
                 <div className="mt-1">
                   <span className="text-md text-gray-700 font-semibold mr-2 underline underline-offset-4">
@@ -256,7 +258,9 @@ const ManageSteps = () => {
 
             <div
               className={`w-full px-3 py-1 uppercase text-xl rounded-md text-white sm:size-fit justify-self-end  ${
-                lead.status === "open" ? "bg-green-700" : "bg-red-700"
+                lead.status === "open" || lead.status === "win"
+                  ? "bg-green-700"
+                  : "bg-red-700"
               }`}
             >
               {lead.status}

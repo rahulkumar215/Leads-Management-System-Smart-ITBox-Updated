@@ -12,6 +12,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import { FaHandshake } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
+import { ToastContainer } from "react-toastify";
+import { SiGoogleanalytics } from "react-icons/si";
 
 const Card = ({
   title,
@@ -64,6 +66,7 @@ const GrowthManagerDashboard = () => {
       );
 
       if (response.data.success) {
+        console.log(response.data);
         setDashboardOne(response.data.dashboardOne || {}); // Ensure safe data
         setDashboardTwo(response.data.dashboardTwo || {}); // Ensure safe data
       }
@@ -94,9 +97,11 @@ const GrowthManagerDashboard = () => {
   return (
     <Layout>
       <div className="p-2 space-y-4">
-        <h3 className="mb-2 text-2xl font-semibold">
-          Growth Manager Analytics
-        </h3>
+        <h2 className="font-semibold text-2xl grid grid-cols-[min-content_max-content_1fr] grid-rows-1 gap-2 items-center">
+          <SiGoogleanalytics />
+          Manager Dashboard
+          <div className=" h-[1px] w-[90%] justify-self-center border-t border-black"></div>
+        </h2>
 
         {/* Dashboard One */}
         <div>
@@ -109,7 +114,7 @@ const GrowthManagerDashboard = () => {
                 count={dashboardOne.interestedCompaniesAssigned || 0}
                 icon={<MdAssignment size={30} />}
                 color="text-gray-800"
-                route=""
+                route="/growth-manager-leads"
                 classes=" col-start-1 col-span-2 sm:col-span-1"
               />
               <Card
@@ -117,14 +122,14 @@ const GrowthManagerDashboard = () => {
                 count={dashboardOne.companiesTouched || 0}
                 icon={<FaHandshake size={30} />}
                 color="text-blue-500"
-                route=""
+                route="/growth-manager-leads"
               />
               <Card
                 title=" Lost"
                 count={dashboardOne.companiesLost || 0}
                 icon={<IoMdCloseCircle size={30} />}
                 color="text-red-500"
-                route=""
+                route="/growth-manager-leads"
               />
             </div>
           ) : (
@@ -144,7 +149,7 @@ const GrowthManagerDashboard = () => {
                   count={count}
                   icon={<MdTimeline size={30} />}
                   color="text-teal-600"
-                  route=""
+                  route="/growth-manager-leads"
                   classes=" !gap-0 sm:!gap-4"
                 />
               ))
@@ -154,6 +159,7 @@ const GrowthManagerDashboard = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </Layout>
   );
 };

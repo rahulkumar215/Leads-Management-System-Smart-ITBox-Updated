@@ -37,7 +37,7 @@ const ManageAccounts = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 10;
+  const itemsPerPage = 30;
 
   useEffect(() => {
     fetchUsers();
@@ -248,7 +248,7 @@ const ManageAccounts = () => {
             </div>
           </div>
           <div
-            className="overflow-x-auto max-h-[50rem] shadow-md rounded-lg border border-gray-300"
+            className="overflow-x-auto max-h-[30rem] shadow-md rounded-lg border border-gray-300"
             style={{ scrollbarWidth: "thin" }}
           >
             <table className="min-w-full table-auto border-collapse">

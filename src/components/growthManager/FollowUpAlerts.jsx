@@ -24,7 +24,7 @@ const FollowUpAlerts = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 10;
+  const itemsPerPage = 30;
 
   useEffect(() => {
     fetchFollowUpNotifications();
@@ -234,7 +234,7 @@ const FollowUpAlerts = () => {
         </div>
 
         {/* Table Section */}
-        <div className="overflow-x-auto shadow-md rounded-lg border border-gray-300">
+        <div className="overflow-x-auto shadow-md rounded-lg border border-gray-300 max-h-[30rem]">
           <table className="min-w-full border-collapse">
             <thead className="bg-gray-800 text-white text-left">
               <tr>
@@ -282,7 +282,7 @@ const FollowUpAlerts = () => {
                 </tr>
               ) : currentPageData.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-4">
+                  <td colSpan={8} className="text-center py-2">
                     No follow-up notifications found.
                   </td>
                 </tr>

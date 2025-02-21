@@ -80,15 +80,46 @@ export const Card = ({
     </div>
   );
 };
+
+export const Card2 = ({
+  divClass,
+  title,
+  titleClass = "",
+  count,
+  countClass = "text-red-600",
+  icon,
+  iconClass = "",
+  route,
+}) => {
+  const navigate = useNavigate();
+  return (
+    <div
+      className={`flex bg-white  items-center border border-gray-100 p-2 justify-between gap-2 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer ${divClass}`}
+      onClick={() => navigate(route)}
+    >
+      <h3 className={`text-lg font-semibold text-gray-600 ${titleClass}`}>
+        {title}
+      </h3>
+      {/* <div
+        className={`text-gray-400 transition-colors duration-300 row-start-2 ${iconClass}`}
+      >
+        {icon}
+      </div> */}
+      <p className={`text-xl font-bold ${countClass}`}>{count}</p>
+    </div>
+  );
+};
 const AdminReports = () => {
   const { backendUrl } = useContext(ThemeContext);
   const token = localStorage.getItem("token");
 
   const [userType, setUserType] = useState("data_analyst");
   const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState("");
-  const [startDate, setStartDate] = useState("2023-01-01");
-  const [endDate, setEndDate] = useState("2025-02-20");
+  const [selectedUser, setSelectedUser] = useState("all");
+
+  // const [selectedUser, setSelectedUser] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [reportData, setReportData] = useState(null);
 
   useEffect(() => {
@@ -108,20 +139,46 @@ const AdminReports = () => {
     fetchUsers();
   }, [userType, backendUrl, token]);
 
+  // const handleFetchReport = async () => {
+  //   if (!userType || !selectedUser || !startDate || !endDate) {
+  //     toast.error("Please select all fields.");
+  //     return;
+  //   }
+
+  //   console.log({
+  //     params: { userType, userId: selectedUser, startDate, endDate },
+  //     headers: { Authorization: `Bearer ${token}` },
+  //   });
+
+  //   try {
+  //     const response = await axios.get(`${backendUrl}/api/admin/user-report`, {
+  //       params: { userType, userId: selectedUser, startDate, endDate },
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+
+  //     setReportData(response.data);
+  //     console.log("report data", response.data);
+  //     toast.success("Report fetched successfully!");
+  //   } catch (error) {
+  //     console.error("Error fetching report:", error);
+  //     toast.error("Error fetching report");
+  //   }
+  // };
+
   const handleFetchReport = async () => {
-    if (!userType || !selectedUser || !startDate || !endDate) {
-      toast.error("Please select all fields.");
+    if (!userType || !startDate || !endDate) {
+      toast.error("Please select user type, start date, and end date.");
       return;
     }
 
-    console.log({
-      params: { userType, userId: selectedUser, startDate, endDate },
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
     try {
       const response = await axios.get(`${backendUrl}/api/admin/user-report`, {
-        params: { userType, userId: selectedUser, startDate, endDate },
+        params: {
+          userType,
+          userId: selectedUser === "all" ? "all" : selectedUser,
+          startDate,
+          endDate,
+        },
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -152,7 +209,6 @@ const AdminReports = () => {
               onChange={(e) => setUserType(e.target.value)}
               className="px-2 py-1 border border-gray-300 rounded-md"
             >
-              <option value="">Select User Type</option>
               <option value="data_analyst">Data Analyst</option>
               <option value="sales_executive">Sales Executive</option>
               <option value="growth_manager">Growth Manager</option>
@@ -170,7 +226,7 @@ const AdminReports = () => {
               onChange={(e) => setSelectedUser(e.target.value)}
               className="px-2 py-1 border border-gray-300 rounded-md"
             >
-              <option value="">All Users</option>
+              <option value="all">All Users</option>
               {users.map((user) => (
                 <option key={user._id} value={user._id}>
                   {user.name}
@@ -238,6 +294,8 @@ const Dashboard = ({ data, userType }) => {
   const openLeads = leads.filter((lead) => lead.status === "open").length;
   const lostLeads = leads.filter((lead) => lead.status === "lost").length;
   const closedLeads = leads.filter((lead) => lead.status === "closed").length;
+  const winLeads = leads.filter((lead) => lead.status === "win").length;
+  const draftLeads = leads.filter((lead) => lead.status === "draft").length;
 
   const renderCustomizedLabel = ({
     cx,
@@ -270,9 +328,12 @@ const Dashboard = ({ data, userType }) => {
     { name: "Open", value: openLeads },
     { name: "Lost", value: lostLeads },
     { name: "Closed", value: closedLeads },
+    { name: "Won", value: winLeads },
+    { name: "Draft", value: draftLeads },
   ];
 
-  const COLORS = ["#0088FE", "#FF8042", "#00C49F"];
+  const COLORS = ["#2563eb", "#4b5563", "#16a34a", "#dc2626", "#ea580c"];
+  // const COLORS = ["#0088FE", "#FF8042", "#00C49F"];
 
   // --- Industry Analysis ---
   const industryCount = leads.reduce((acc, lead) => {
@@ -348,39 +409,51 @@ const Dashboard = ({ data, userType }) => {
               <GrOverview />
               Lead Overview
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <Card
-                title="Total Leads"
+            <div className="grid grid-cols-2 sm:grid-cols-6 gap-2">
+              <Card2
+                title="Total"
                 count={totalLeads}
                 countClass="text-gray-700"
                 icon={<MdDashboard size={20} />}
               />
-              <Card
+              <Card2
                 title="Open"
                 count={openLeads}
-                countClass="text-green-600"
+                countClass="text-blue-600"
                 icon={<FaHourglassStart size={20} />}
               />
-              <Card
+              <Card2
                 title="Lost"
                 count={lostLeads}
                 countClass="text-red-600"
                 icon={<IoIosCloseCircle size={20} />}
               />
-              <Card
+              <Card2
                 title="Closed"
                 count={closedLeads}
-                countClass="text-blue-600"
+                countClass="text-orange-600"
+                icon={<FaCheck size={20} />}
+              />
+              <Card2
+                title="Draft"
+                count={draftLeads}
+                countClass="text-gray-600"
+                icon={<FaCheck size={20} />}
+              />
+              <Card2
+                title="Won"
+                count={winLeads}
+                countClass="text-green-600"
                 icon={<FaCheck size={20} />}
               />
             </div>
           </div>
           <div>
-            <h2 className="text-lg font-semibold grid grid-cols-[min-content_max-content] items-center gap-2">
+            <h2 className="text-lg mb-2 sm-mb-0 font-semibold grid grid-cols-[min-content_max-content] items-center gap-2">
               <FaChartPie />
               Leads Overview (%)
             </h2>
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={225}>
               <PieChart>
                 <Pie
                   data={statusData}

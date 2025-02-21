@@ -17,6 +17,7 @@ const Header = ({ toggleSidebar, sidebarOpen }) => {
   };
 
   const role = renderRole(localStorage.getItem("role"));
+  const username = renderRole(localStorage.getItem("username"));
 
   return (
     <nav className="grid grid-cols-[min-content_1fr_min-content] rounded-md items-center p-2 m-2 bg-[#2C2E30] shadow-lg">
@@ -42,7 +43,7 @@ const Header = ({ toggleSidebar, sidebarOpen }) => {
       {/* Right Section: Welcome Message & User Icon */}
       <div className="hidden sm:grid grid-cols-[max-content_min-content] items-center justify-center grid-rows-2 gap-x-2 gap-y-3 ">
         <span className="text-white col-start-1 font-semibold col-span-1 leading-0">
-          Rahul
+          {username}
         </span>
         <span className="text-white col-start-1 text-sm col-span-1 leading-0">
           {role}

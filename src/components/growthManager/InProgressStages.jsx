@@ -24,7 +24,7 @@ function InProgressStages() {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 10;
+  const itemsPerPage = 30;
 
   useEffect(() => {
     fetchStages();
@@ -259,7 +259,7 @@ function InProgressStages() {
       </div>
 
       {/* Table Section */}
-      <div className="overflow-x-auto shadow-md rounded-lg border border-gray-300">
+      <div className="overflow-x-auto shadow-md rounded-lg border border-gray-300 max-h-[30rem]">
         <table className="min-w-full border-collapse">
           <thead className="bg-gray-800 text-white text-left ">
             <tr>

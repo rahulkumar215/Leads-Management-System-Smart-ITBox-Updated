@@ -22,6 +22,7 @@ const EditContactData = () => {
     lead: true,
     interactions: true,
   });
+  const [lead, setLead] = useState();
 
   // Fetch leadContacts contacts
   useEffect(() => {
@@ -31,6 +32,7 @@ const EditContactData = () => {
           `${backendUrl}/api/lead/sale-executive/single-lead/${leadId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
+        setLead(response.data.lead);
         setLeadContacts(response.data.lead.contactPoints);
       } catch (error) {
         console.error("Error fetching lead:", error);
@@ -99,7 +101,17 @@ const EditContactData = () => {
     <Layout>
       <div className="container mx-auto p-2">
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-4">
-          <h3 className="text-2xl font-semibold">Lead Interactions</h3>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <h3 className="text-2xl font-semibold">Lead Interactions : </h3>
+            <div className="flex gap-2">
+              <span className="   font-semibold px-2 py-1 rounded-md bg-green-100  text-green-800 border border-green-400">
+                {lead.companyName}
+              </span>
+              <span className="  font-semibold px-2 py-1 rounded-md bg-green-100  text-green-800 border border-green-400 uppercase">
+                {lead._id.slice(-5)}
+              </span>
+            </div>
+          </div>
           <button
             onClick={() => setIsModalOpen(true)}
             className="px-4 py-2 bg-red-600 text-white w-full sm:w-fit cursor-pointer rounded-md hover:bg-red-700 focus:outline-none"

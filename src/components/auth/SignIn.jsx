@@ -1,9 +1,9 @@
-import React, { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 // import Logo from '../images/logo/logo.png';
 import sideImage from "../../assets/hero-shape-11.png";
 import logo from "../../assets/logo.jpeg";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { ThemeContext } from "../../context/ThemeContext";
 import { Bars } from "react-loader-spinner";
 
@@ -11,7 +11,7 @@ const SignIn = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  // const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const { backendUrl } = useContext(ThemeContext);
@@ -40,6 +40,7 @@ const SignIn = () => {
         // Store role and token in localStorage
         localStorage.setItem("token", data.token); // Save the token
         localStorage.setItem("role", data.role); // Save the role
+        localStorage.setItem("username", data.name); // Save the username
 
         console.log(data);
 
@@ -77,6 +78,7 @@ const SignIn = () => {
       }
     } catch (error) {
       setError("An error occurred. Please try again later.");
+      console.log(error);
     } finally {
       setIsLoading(false);
     }
@@ -190,6 +192,8 @@ const SignIn = () => {
           </form>
         </div>
       </div>
+
+      <ToastContainer />
     </div>
   );
 };

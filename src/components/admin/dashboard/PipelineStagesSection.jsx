@@ -67,7 +67,7 @@ const PipelineStagesSection = ({
                 count={count}
                 icon={<MdTimeline size={20} />}
                 color="text-teal-600"
-                route="/pipeline"
+                route="/admin/all-leads"
               />
             ))
           ) : (

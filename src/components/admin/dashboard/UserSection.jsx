@@ -14,6 +14,7 @@ function UserSection({ userCounts }) {
               count={count}
               icon={<FiUserPlus size={20} />}
               color="text-gray-500 text-2xl sm:text-4xl"
+              route="/admin/manager-accounts"
             />
           ))
         ) : (

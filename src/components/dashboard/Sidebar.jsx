@@ -30,6 +30,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   // Get role and token from localStorage
+  const username = localStorage.getItem("username");
   const role = localStorage.getItem("role");
   const token = localStorage.getItem("token");
   const { backendUrl } = useContext(ThemeContext);
@@ -281,7 +282,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         return [
           {
             route: "/sales-dashboard",
-            icon: <FaHome />,
+            icon: <RiDashboardHorizontalFill />,
             label: "Dashboard",
           },
           {
@@ -304,7 +305,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           },
           {
             route: "/sales-executive-leads",
-            icon: <FaHome />,
+            icon: <MdLeaderboard />,
             label: "Leads",
           },
         ];
@@ -359,6 +360,20 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     followUpNotifications,
   ]);
 
+  const renderRole = (role) => {
+    let formatted = "";
+    if (role === "growth_manager") {
+      formatted = "Growth Manager";
+    } else if (role === "sales_executive") {
+      formatted = "Sales Executive";
+    } else if (role === "data_analyst") {
+      formatted = "Data Analyst";
+    } else {
+      formatted = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+    }
+    return formatted;
+  };
+
   return (
     <aside
       className={`fixed top-0 left-0 z-50 h-full bg-gray-100 shadow-lg py-2 pl-2 transform transition-all duration-300 ease-in-out
@@ -367,10 +382,14 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     >
       <div className="bg-[#212529] rounded-md h-full">
         <div className="w-full grid sm:hidden grid-cols-2 items-center justify-center grid-rows-2 gap-x-2 gap-y-3 px-3 pt-4 pb-2">
-          <span className="text-white col-start-1 font-semibold">Rahul</span>
-          <span className="text-white col-start-1 text-sm">Admin</span>
+          <span className="text-white col-start-1 font-semibold col-span-1 leading-0">
+            {username}
+          </span>
+          <span className="text-white col-start-1 text-sm col-span-1  leading-0">
+            {renderRole(role)}
+          </span>
           <FaUserCircle
-            className="text-white col-start-2 row-span-2 justify-self-end"
+            className="text-white col-start-2 col-span-1 row-start-1 row-span-2 justify-self-end"
             size={25}
           />
         </div>

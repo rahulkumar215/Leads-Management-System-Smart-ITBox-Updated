@@ -18,7 +18,7 @@ const ProductList = () => {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 10;
+  const itemsPerPage = 30;
 
   // Modal states
   const [showAddModal, setShowAddModal] = useState(false);

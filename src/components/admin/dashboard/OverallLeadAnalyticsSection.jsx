@@ -75,56 +75,56 @@ const OverallLeadAnalyticsSection = ({
                 count={dashboardOne.totalLeads || 0}
                 icon={<MdDashboard size={20} />}
                 color="text-blue-600"
-                route="/total-leads"
+                route="/admin/all-leads"
               />
               <Card
                 title="Not Interested"
                 count={dashboardOne.totalNotInterestedLeads || 0}
                 icon={<MdNotInterested size={20} />}
                 color="text-red-600"
-                route="/not-interested"
+                route="/admin/all-leads"
               />
               <Card
                 title="Interested"
                 count={dashboardOne.totalInterestedLeads || 0}
                 icon={<MdThumbUp size={20} />}
                 color="text-green-600"
-                route="/interested"
+                route="/admin/all-leads"
               />
               <Card
                 title="Draft"
                 count={dashboardOne.totalDraftLeads || 0}
                 icon={<MdDrafts size={20} />}
                 color="text-yellow-600"
-                route="/draft-leads"
+                route="/admin/all-leads"
               />
               <Card
                 title="Open"
                 count={dashboardOne.totalOpenLeads || 0}
                 icon={<MdOpenInNew size={20} />}
                 color="text-indigo-600"
-                route="/open-leads"
+                route="/admin/all-leads"
               />
               <Card
                 title="Closed"
                 count={dashboardOne.totalClosedLeads || 0}
                 icon={<MdCheckCircle size={20} />}
                 color="text-purple-600"
-                route="/closed-leads"
+                route="/admin/all-leads"
               />
               <Card
                 title="Lost"
                 count={dashboardOne.totalLostLeads || 0}
                 icon={<MdCancel size={20} />}
                 color="text-pink-600"
-                route="/lost-leads"
+                route="/admin/all-leads"
               />
               <Card
                 title="In Pipeline"
                 count={dashboardOne.totalLeadsInPipeline || 0}
                 icon={<MdTimeline size={20} />}
                 color="text-teal-600"
-                route="/leads-pipeline"
+                route="/admin/all-leads"
               />
             </>
           ) : (

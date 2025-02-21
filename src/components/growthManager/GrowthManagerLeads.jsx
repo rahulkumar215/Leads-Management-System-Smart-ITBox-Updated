@@ -17,7 +17,7 @@ const LeadList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 10;
+  const itemsPerPage = 30;
 
   const getAllGrowthLeads = async () => {
     setLoading(true);
@@ -86,6 +86,23 @@ const LeadList = () => {
     setExpandedRows((prev) => (prev.includes(id) ? [] : [id]));
   };
 
+  const getStatusStyles = (status) => {
+    switch (status) {
+      case "open":
+        return "border-blue-300 bg-blue-100 text-blue-600";
+      case "closed":
+        return "border-red-300 bg-red-100 text-red-700";
+      case "lost":
+        return "border-red-300 bg-red-100 text-red-700";
+      case "win":
+        return "border-green-300 bg-green-100 text-green-700";
+      case "draft":
+        return "border-gray-300 bg-gray-100 text-gray-700";
+      default:
+        return "border-gray-300 bg-gray-100 text-gray-700";
+    }
+  };
+
   return (
     <Layout>
       <div className="p-2 min-h-screen">
@@ -104,12 +121,13 @@ const LeadList = () => {
         </div>
 
         <div
-          className="overflow-x-auto shadow-md rounded-lg border border-gray-300"
+          className="overflow-x-auto shadow-md rounded-lg border border-gray-300 max-h-[30rem]"
           style={{ scrollbarWidth: "thin" }}
         >
           <table className="min-w-full table-auto border-collapse">
             <thead className="bg-[#173B45] text-[#F8EDED] sticky top-0 z-10">
               <tr>
+                <th className="py-2 text-sm font-semibold">S. No.</th>
                 <th className="py-2 text-sm min-w-16 font-semibold">Lead Id</th>
                 <th className="px-2 py-2 text-sm text-left font-semibold hidden md:table-cell">
                   Created At
@@ -126,12 +144,12 @@ const LeadList = () => {
                 <th className="px-2 py-2 text-sm text-left font-semibold">
                   Status
                 </th>
-                <th className="px-4 py-2 text-sm font-semibold">
+                {/* <th className="px-4 py-2 text-sm font-semibold">
                   Data Analyst
                 </th>
                 <th className="px-4 py-2 text-sm font-semibold">
                   Sales Executive
-                </th>
+                </th> */}
                 <th className="px-4 py-2 text-center text-sm font-semibold">
                   Manage
                 </th>
@@ -154,12 +172,15 @@ const LeadList = () => {
                   </td>
                 </tr>
               ) : currentPageData.length > 0 ? (
-                currentPageData.map((lead) => (
+                currentPageData.map((lead, i) => (
                   <React.Fragment key={lead._id}>
                     <tr
                       onClick={() => toggleRowExpansion(lead._id)}
                       className="border-b divide-x divide-gray-200 border-gray-200 text-sm hover:bg-gray-50 cursor-pointer"
                     >
+                      <td className="px-2 py-1 text-center font-semibold">
+                        {offset + i + 1}
+                      </td>
                       <td className="px-2 py-1 text-center uppercase text-gray-800 font-semibold">
                         {lead._id.slice(-5)}
                       </td>
@@ -182,23 +203,16 @@ const LeadList = () => {
                       <td className="px-2 py-1 capitalize font-semibold text-gray-800 hidden md:table-cell">
                         {lead.contactPoints?.length || 0}
                       </td>
-                      <td
-                        className={`px-2 py-1 capitalize font-semibold ${
-                          lead.status === "open"
-                            ? "text-blue-600"
-                            : "text-red-600"
-                        }`}
-                      >
+                      <td className="px-2 py-1 capitalize font-medium">
                         <span
-                          className={`${
-                            lead.status === "draft" &&
-                            "px-2 border border-gray-400 rounded-lg bg-gray-200 text-gray-700"
-                          }`}
+                          className={`px-2 border rounded-lg ${getStatusStyles(
+                            lead.status
+                          )}`}
                         >
                           {lead.status}
                         </span>
                       </td>
-                      <td
+                      {/* <td
                         className={`px-2 py-1 text-center capitalize ${
                           !lead.createdBy ? "text-red-500 font-semibold" : ""
                         }`}
@@ -214,7 +228,7 @@ const LeadList = () => {
                       >
                         {lead.assignedToSalesExecutive.slice(-5) ||
                           "Not Assigned"}
-                      </td>
+                      </td> */}
                       <td className="px-2 py-1 text-center">
                         <button
                           className="px-3 py-1 text-green-600 cursor-pointer rounded hover:text-green-700 focus:outline-none"
@@ -250,9 +264,6 @@ const LeadList = () => {
                                   <th className="border border-gray-300 px-2 py-1 text-left text-xs font-semibold">
                                     Mobile No
                                   </th>
-                                  <th className="border border-gray-300 px-2 py-1 text-left text-xs font-semibold">
-                                    Address
-                                  </th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -274,9 +285,6 @@ const LeadList = () => {
                                     <td className="px-2 py-1 text-sm">
                                       {contact.phone || "N/A"} /{" "}
                                       {contact.alternatePhone || "N/A"}
-                                    </td>
-                                    <td className="px-2 py-1 text-sm">
-                                      {contact.address || "N/A"}
                                     </td>
                                   </tr>
                                 ))}

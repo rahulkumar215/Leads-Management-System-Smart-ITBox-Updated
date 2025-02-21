@@ -1,6 +1,6 @@
-import { Layout } from "antd";
 import React, { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
+import Layout from "../../common/Layout";
 
 export function RenderLeads({ leads, userType, selectedUser }) {
   const [filteredLeads, setFilteredLeads] = useState([]);
@@ -14,7 +14,7 @@ export function RenderLeads({ leads, userType, selectedUser }) {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 10;
+  const itemsPerPage = 30;
 
   // Updated global search: uses the passed query value directly
   const applySearch = (data, query) => {
@@ -77,9 +77,26 @@ export function RenderLeads({ leads, userType, selectedUser }) {
   //   setExpandedRows((prev) => (prev.includes(id) ? [] : [id]));
   // };
 
+  const getStatusStyles = (status) => {
+    switch (status) {
+      case "open":
+        return "border-blue-300 bg-blue-100 text-blue-600";
+      case "closed":
+        return "border-red-300 bg-red-100 text-red-700";
+      case "lost":
+        return "border-red-300 bg-red-100 text-red-700";
+      case "win":
+        return "border-green-300 bg-green-100 text-green-700";
+      case "draft":
+        return "border-gray-300 bg-gray-100 text-gray-700";
+      default:
+        return "border-gray-300 bg-gray-100 text-gray-700";
+    }
+  };
+
   return (
     <Layout>
-      <div className="p-2" style={{ minHeight: "100vh" }}>
+      <div className="p-2">
         <h4 className="text-lg font-semibold mb-2">
           All Leads <span className="text-sm">({leads.length})</span>
         </h4>
@@ -95,7 +112,7 @@ export function RenderLeads({ leads, userType, selectedUser }) {
         </div>
 
         <div
-          className="overflow-x-auto shadow-md rounded-lg border border-gray-300"
+          className="overflow-x-auto shadow-md rounded-lg border border-gray-300 max-h-[20rem]"
           style={{ scrollbarWidth: "thin" }}
         >
           <table className="min-w-full table-auto border-collapse">
@@ -111,26 +128,18 @@ export function RenderLeads({ leads, userType, selectedUser }) {
                 <th className="px-2 py-2 text-sm text-left font-semibold">
                   Status
                 </th>
-                {(userType === "growth_manager" ||
-                  userType === "sales_executive") && (
-                  <th className="px-4 py-2 text-sm font-semibold hidden md:table-cell">
-                    Data Analyst
-                  </th>
-                )}
 
-                {(userType === "growth_manager" ||
-                  userType === "data_analyst") && (
-                  <th className="px-4 py-2 text-sm font-semibold">
-                    Sales Executive
-                  </th>
-                )}
+                <th className="px-4 py-2 text-sm font-semibold hidden md:table-cell">
+                  Data Analyst
+                </th>
 
-                {(userType === "sales_executive" ||
-                  userType === "data_analyst") && (
-                  <th className="px-4 py-2 text-right text-sm font-semibold hidden md:table-cell">
-                    Growth Manager
-                  </th>
-                )}
+                <th className="px-4 py-2 text-sm font-semibold">
+                  Sales Executive
+                </th>
+
+                <th className="px-4 py-2 text-right text-sm font-semibold hidden md:table-cell">
+                  Growth Manager
+                </th>
                 {/* <th className="px-4 py-2 text-center text-sm font-semibold">
                   Action
                 </th> */}
@@ -165,70 +174,53 @@ export function RenderLeads({ leads, userType, selectedUser }) {
                           </span>
                         )}
                       </td>
-                      <td
-                        className={`px-2 py-1 capitalize font-semibold ${
-                          lead.status === "open"
-                            ? "text-blue-600"
-                            : "text-red-600"
-                        }`}
-                      >
+                      <td className="px-2 py-1 capitalize font-medium">
                         <span
-                          className={`${
-                            lead.status === "draft" &&
-                            "px-1 border border-gray-400 rounded-lg bg-gray-200 text-gray-700"
-                          }`}
+                          className={`px-2 border rounded-lg ${getStatusStyles(
+                            lead.status
+                          )}`}
                         >
                           {lead.status}
                         </span>
                       </td>
 
-                      {(userType === "growth_manager" ||
-                        userType === "sales_executive") && (
-                        <td
-                          className={`px-2 py-1 text-center hidden md:table-cell capitalize ${
-                            lead.createdBy.name === "N/A"
-                              ? "text-red-500 font-semibold"
-                              : ""
-                          }`}
-                        >
-                          {lead.createdBy.name ||
-                            lead.createdBy?.slice(-5).toUpperCase() ||
-                            "N/A"}
-                        </td>
-                      )}
+                      <td
+                        className={`px-2 py-1 text-center hidden md:table-cell capitalize ${
+                          lead.createdBy.name === "N/A"
+                            ? "text-red-500 font-semibold"
+                            : ""
+                        }`}
+                      >
+                        {lead.createdBy.name ||
+                          lead.createdBy?.slice(-5).toUpperCase() ||
+                          "N/A"}
+                      </td>
 
-                      {(userType === "growth_manager" ||
-                        userType === "data_analyst") && (
-                        <td
-                          className={`px-2 py-1 text-center capitalize ${
-                            lead.assignedToSalesExecutive?.name ===
-                            "Not Assigned"
-                              ? "text-red-500 font-semibold"
-                              : ""
-                          }`}
-                        >
-                          {lead.assignedToSalesExecutive?.name ||
-                            lead.assignedToSalesExecutive
-                              ?.slice(-5)
-                              .toUpperCase() ||
-                            "Not Assigned"}
-                        </td>
-                      )}
+                      <td
+                        className={`px-2 py-1 text-center capitalize ${
+                          lead.assignedToSalesExecutive?.name === "Not Assigned"
+                            ? "text-red-500 font-semibold"
+                            : ""
+                        }`}
+                      >
+                        {lead.assignedToSalesExecutive?.name ||
+                          lead.assignedToSalesExecutive
+                            ?.slice(-5)
+                            .toUpperCase() ||
+                          "Not Assigned"}
+                      </td>
 
-                      {(userType === "sales_executive" ||
-                        userType === "data_analyst") && (
-                        <td
-                          className={`px-2 py-1 text-right hidden md:table-cell capitalize ${
-                            lead.contactPoints[0]?.assignedToGrowthManager
-                              ?.name === "Not Assigned"
-                              ? "text-red-500 font-semibold"
-                              : ""
-                          }`}
-                        >
-                          {lead?.contactPoints[0]?.assignedToGrowthManager
-                            ?.name || "Not Assigned"}
-                        </td>
-                      )}
+                      <td
+                        className={`px-2 py-1 text-right hidden md:table-cell capitalize ${
+                          lead.contactPoints[0]?.assignedToGrowthManager
+                            ?.name === "Not Assigned"
+                            ? "text-red-500 font-semibold"
+                            : ""
+                        }`}
+                      >
+                        {lead?.contactPoints[0]?.assignedToGrowthManager
+                          ?.name || "Not Assigned"}
+                      </td>
 
                       {/* <td className="px-2 py-1 text-center">
                         <button
