@@ -375,7 +375,29 @@ const DashboardLayout = ({ children }) => {
           }`}
         >
           <Header toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
-          <div className="flex-1 max-w-full m-2 rounded-md">{children}</div>
+          <div className="flex-1 max-w-full m-2 rounded-md min-h-screen">
+            {children}
+          </div>
+          {/* Footer */}
+          <footer className="bg-[#212529] text-white py-2 sm:p-4 text-center sm:text-right mt-auto m-2 rounded-md">
+            {/* <p className="text-sm">
+              © {new Date().getFullYear()}{" "}
+              <span className="text-yellow-400">Smart ItBox</span>. All rights
+              reserved.
+            </p> */}
+
+            <p className="text-sm">
+              Designed with ❤️ and crafted with care by Team{" "}
+              <a
+                href="https://www.youtube.com/@SHALENDERSINGH"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-yellow-500 font-bold block sm:inline hover:text-yellow-600"
+              >
+                SMART ITBOX
+              </a>
+            </p>
+          </footer>
         </div>
       </div>
     </div>

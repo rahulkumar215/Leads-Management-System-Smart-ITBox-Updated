@@ -20,7 +20,7 @@ const Header = ({ toggleSidebar, sidebarOpen }) => {
   const username = renderRole(localStorage.getItem("username"));
 
   return (
-    <nav className="grid grid-cols-[min-content_1fr_min-content] rounded-md items-center p-2 m-2 bg-[#2C2E30] shadow-lg">
+    <nav className="grid grid-cols-[min-content_1fr_min-content] rounded-md items-center p-2 m-2 bg-purple-600 shadow-lg">
       {/* Left Section: Hamburger Menu */}
       <button
         className="p-2 rounded-md text-white hover:bg-white cursor-pointer hover:text-yellow-600 transition-colors duration-300"

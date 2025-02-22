@@ -73,8 +73,8 @@ const LeadDetails = () => {
         <div className="flex justify-center items-center min-h-screen">
           <DNA
             visible={true}
-            height="100"
-            width="100"
+            height="150"
+            width="150"
             ariaLabel="dna-loading"
             wrapperStyle={{}}
             wrapperClass="dna-wrapper"

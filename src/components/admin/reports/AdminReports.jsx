@@ -118,8 +118,10 @@ const AdminReports = () => {
   const [selectedUser, setSelectedUser] = useState("all");
 
   // const [selectedUser, setSelectedUser] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState("2025-02-01");
+  const [endDate, setEndDate] = useState(
+    new Date().toLocaleDateString("en-GB").split("/").reverse().join("-") || ""
+  );
   const [reportData, setReportData] = useState(null);
 
   useEffect(() => {

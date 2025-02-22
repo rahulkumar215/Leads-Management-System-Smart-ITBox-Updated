@@ -20,6 +20,7 @@ import { LuCalendarClock, LuRefreshCw } from "react-icons/lu";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ThemeContext } from "../../context/ThemeContext";
+import logo from "/src/assets/mainlogo.png";
 import axios from "axios";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
@@ -376,20 +377,27 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
   return (
     <aside
-      className={`fixed top-0 left-0 z-50 h-full bg-gray-100 shadow-lg py-2 pl-2 transform transition-all duration-300 ease-in-out
+      className={`fixed top-0 left-0 z-50 h-full shadow-lg py-2 pl-2 transform transition-all duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full"} w-60 overflow-y-auto`}
       style={{ scrollbarWidth: "thin" }}
     >
-      <div className="bg-[#212529] rounded-md h-full">
+      <div className="bg-[#FFF8F8] rounded-md h-full">
+        <div className="w-full flex justify-center ">
+          <img
+            src={logo}
+            alt="Veer Overseas Logo"
+            className="h-16 object-contain"
+          />
+        </div>
         <div className="w-full grid sm:hidden grid-cols-2 items-center justify-center grid-rows-2 gap-x-2 gap-y-3 px-3 pt-4 pb-2">
-          <span className="text-white col-start-1 font-semibold col-span-1 leading-0">
+          <span className="text-gray-900 capitalize col-start-1 font-semibold col-span-1 leading-0">
             {username}
           </span>
-          <span className="text-white col-start-1 text-sm col-span-1  leading-0">
+          <span className="text-gray-900 col-start-1 text-sm col-span-1  leading-0">
             {renderRole(role)}
           </span>
           <FaUserCircle
-            className="text-white col-start-2 col-span-1 row-start-1 row-span-2 justify-self-end"
+            className="text-gray-900 col-start-2 col-span-1 row-start-1 row-span-2 justify-self-end"
             size={25}
           />
         </div>
@@ -407,11 +415,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                   }
                   className={`w-full grid cursor-pointer grid-cols-[min-content_max-content_1fr] items-center gap-2 px-4 py-2 text-sm font-medium transition-all rounded-md duration-200 ${
                     activeRoute === item.route
-                      ? "bg-gray-100 text-gray-900"
-                      : "text-gray-100 hover:bg-gray-200 hover:text-gray-900"
+                      ? "bg-orange-200 text-gray-900"
+                      : "text-gray-900 hover:bg-orange-200"
                   }`}
                 >
-                  <span className="text-lg text-yellow-500">{item.icon}</span>
+                  <span className="text-lg text-[#D83043]">{item.icon}</span>
                   {item.label}
                   {item.value ? (
                     <span className="justify-self-start px-1 rounded-4xl text-white bg-red-600">
@@ -463,7 +471,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         <div className="p-2">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all duration-300 bg-white hover:bg-yellow-200 text-red-600"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all duration-300 bg-[#F5792E] hover:bg-[#F5792E]/90 text-white"
           >
             <FaSignOutAlt size={18} />
             <span className="text-sm tracking-wide font-medium">Log out</span>
